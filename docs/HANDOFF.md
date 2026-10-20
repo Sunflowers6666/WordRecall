@@ -12,7 +12,7 @@
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
 | GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
-| 当前阶段 | **阶段 3 已完成并合并到 develop**；下一步真机验证 / 阶段 4 |
+| 当前阶段 | **阶段 3 已完成并合并、真机验证通过**；下一步阶段 4 / 上线准备 |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -59,7 +59,7 @@
 - 已验证（2026-10-20 17:57，开发者工具）：真实 `wx.login` → `code2Session` → 建用户 → 拉 20 词并写入 `learning_record`；页面渲染、日历回读正常
 - **记录时机改为「翻过才记」（2026-10-20）**：`POST /api/study/sessions` 只预览不写记录；新增 `POST /api/study/records` 由客户端在点「下一个 / 学完了」时逐词上报（幂等，重复上报 `recorded=0`）。避免“点进学习页又退出”留下幽灵记录
 - 真实接口验证：预览 5 词 → 0 条记录；上报 1 → 1 条；重复上报 → 0；再报 2 → 3 条；再次预览自动跳过已记录的 3 个
-- 未验证：真机 iOS / Android（需要局域网 IP + 同一网络）
+- 真机已验证（2026-10-20）：开发者工具「真机调试」+ 手机微信打开，局域网 IP `172.20.242.224:8080` + 手机端「打开调试」跳过域名校验，页面与交互正常
 
 ### 阶段 3（已合并，PR #6 → develop，2026-10-20）
 
@@ -98,7 +98,7 @@ examples = 14268 条入库：CET-4 3848/3849（100%）、CET-6 5392/5407（99.7%
 ### 未完成 / 待用户操作
 
 - **真实微信登录已通过（2026-10-20 17:57）**：开发者工具里点「开始学习」走真实 `wx.login` → `code2Session` → 建用户（id=2）→ 写入学习记录，日历与词库接口回读正常。测试数据随后已按你的要求清空（今天从 0 开始）
-- 真机（iOS / Android）未验证：需要把 `miniprogram/config/index.js` 的 develop 地址改成电脑局域网 IP
+- 真机（iOS / Android）**已验证通过**（2026-10-20，真机调试扫码 + 手机端打开调试；局域网 IP + http）
 - 「小程序代码上传密钥」曾误粘进 `application-secret.yml`，已清理；**需在公众平台重置该上传密钥**（阶段 6 会重新生成）
 - 云服务器未采购
 - Dependabot 未启用（可选，需用户确认）
@@ -225,3 +225,4 @@ backend 测试是否通过，然后按 HANDOFF 的“下一步”继续。
 - **2026-10-20 事件**：曾把「小程序代码上传密钥」（RSA 私钥）误粘进 `backend/application-secret.yml`。已清理（文件恢复 4 个配置项），并已验证：该文件未被 Git 跟踪、历史中也无该私钥。**这把上传密钥应视为已泄露，需要在微信公众平台重置**（开发管理 → 开发设置 → 小程序代码上传）。
 - 填 AppSecret 用 `scripts/setup/windows/set-wx-secret.py`：隐藏输入、校验 32 位字母数字、自动清掉误粘的多行内容；不要用记事本直接粘贴。
 - 区分两个东西：**AppSecret**（32 位字母数字）与**上传密钥**（`-----BEGIN RSA PRIVATE KEY-----` 开头的私钥），后者只用于阶段 6 的 CI 上传。
+- **2026-10-20 secret scanning 告警 #1**：GitHub 把 `miniprogram/project.config.json` 里的 **AppID** 标成 `tencent_wechat_api_app_id`。AppID 本就是公开信息（每个小程序客户端里都有），**不是密钥**；已在 GitHub 上标记为 `false_positive` 解决，当前 open 告警为 0。真正保密的 AppSecret 从未进入仓库。
