@@ -12,7 +12,7 @@
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
 | GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
-| 当前阶段 | **阶段 2 功能已完成**：规范、7 个接口、6 个页面 + 2 个组件；待开发者工具/真机联调 |
+| 当前阶段 | **阶段 2 功能完成并已真实登录验证**；剩真机适配与阶段 3 |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -56,7 +56,8 @@
 - 设计令牌全部落在 `app.wxss` 的 CSS 变量，页面不写死颜色/字号
 - 自检：`python miniprogram/scripts/check.py` 通过（11 JSON / 15 JS / 8 WXML：JSON 解析、node 语法、WXML 标签配对、页面四件套、组件路径、tabBar 引用）
 - 页面逻辑冒烟：`node miniprogram/scripts/logic-test.js` **11 项通过**（月历网格、今天/未来标记、月份切换与未来月拦截、新学翻页、复习只回传错词、结果页数据、词库切换）
-- 未验证：微信开发者工具真实渲染、真机 iOS/Android、真实 `code2Session`
+- 已验证（2026-10-20 17:57，开发者工具）：真实 `wx.login` → `code2Session` → 建用户 → 拉 20 词并写入 `learning_record`；页面渲染、日历回读正常
+- 未验证：真机 iOS / Android（需要局域网 IP + 同一网络）
 
 ### 实测数据
 
@@ -65,17 +66,17 @@ total_words = 14296
 CET-4 = 3849
 CET-6 = 5407
 IELTS = 5040
-users = 0
-learning_record = 0（冒烟测试数据已清理）
+users = 1
+learning_record = 40（2026-10-20，真实登录产生）
 backend_tests = 27 passed
-miniprogram_checks = check.py OK（11 JSON / 15 JS / 8 WXML）
+miniprogram_checks = check.py OK（11 JSON / 16 JS / 8 WXML）
 miniprogram_logic = 11 passed
 ```
 
 ### 未完成 / 待用户操作
 
-- 真实 `code2Session` **凭据已验证**（2026-10-20）：本地 AppSecret 被微信接受（假 code 返回 `40029 invalid code`），后端日志 `wx login failed, errorCode=40029`，接口返回 400/50001。**还差一次真实 wx.login 的 code 走完整登录**
-- 小程序未在微信开发者工具/真机里跑过（静态检查与逻辑冒烟已过，渲染与真机行为待验证）
+- **真实微信登录已通过（2026-10-20 17:57）**：开发者工具里点「开始学习」走真实 `wx.login` → `code2Session` → 建用户（id=2）→ 写入当天 40 条 `learning_record`，日历与词库接口回读正常
+- 真机（iOS / Android）未验证：需要把 `miniprogram/config/index.js` 的 develop 地址改成电脑局域网 IP
 - 「小程序代码上传密钥」曾误粘进 `application-secret.yml`，已清理；**需在公众平台重置该上传密钥**（阶段 6 会重新生成）
 - 云服务器未采购
 - Dependabot 未启用（可选，需用户确认）
