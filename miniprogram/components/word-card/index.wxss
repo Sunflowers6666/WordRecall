@@ -49,6 +49,29 @@
   margin: var(--s-5, 40rpx) 0 var(--s-4, 32rpx);
 }
 
+.audio-row {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--s-3, 24rpx);
+}
+
+.audio-btn {
+  display: flex;
+  align-items: center;
+  height: 64rpx;
+  padding: 0 28rpx;
+  border-radius: var(--r-chip, 999rpx);
+  background: var(--c-brand-tint, #E8F8D8);
+  color: var(--c-brand-strong, #46A302);
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.audio-btn-on {
+  background: var(--c-brand, #58CC02);
+  color: #FFFFFF;
+}
+
 .meaning {
   font-size: 32rpx;
   line-height: 1.6;

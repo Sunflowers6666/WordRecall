@@ -329,6 +329,7 @@ miniprogram/
 | POST | `/api/study/records` | 需要 | `{wordIds:[1,2]}` | 写入当天学习记录：`{recorded, todayWordCount}` |
 | GET | `/api/review?date=2026-10-16` | 需要 | — | `{date, words:[...同上]}` |
 | POST | `/api/review/submit` | 需要 | `{date, wrongWordIds:[1,2]}` | `{date, total:20, wrong:3}` |
+| GET | `/api/words/{id}/audio?accent=us` | 公开 | — | `audio/mpeg`（离线预生成，缓存 7 天） |
 
 规则：
 

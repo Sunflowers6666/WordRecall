@@ -69,7 +69,11 @@
 - 单测 32 → **41 全部通过**；真实接口冒烟 9 项通过
 - **UI 2.0 令牌 v2 已落地**：蓝白 + 厚按钮（`app.wxss`、tabBar、两个组件、全部页面）；「我的」页新增统计卡与每批词数选择；学习页不再传 size
 - 页面逻辑冒烟 12 项通过（新增“我的页统计与每批词数”）
-- 待做：例句（DeepSeek 批量生成，等 key）、真机适配
+- **发音（方案 A，Windows SAPI 离线生成）**：`scripts/dict/generate_audio.py` 用系统音色 `Microsoft Zira Desktop` 生成美音 mp3（约 9KB/词），输出 `backend/data/audio/us/<wordId>.mp3`；`GET /api/words/{id}/audio?accent=us` 公开返回，`Cache-Control: max-age=604800`；单词卡加了「🔊 美」按钮
+  - 英音暂缺：本机无 en-GB 语音包；Windows 设置 → 时间和语言 → 语言和区域 → 添加 English (United Kingdom) 语音包后会多出 `Microsoft Hazel Desktop`，重跑脚本加 `--accent uk` 即可
+  - 音频与例句数据都在 `backend/data/`（已 gitignore），换机器需重跑两个脚本
+- 后端单测 41 → **46 全部通过**（新增音频服务 5 个）
+- 待做：例句全量生成完成后导入；真机适配
 
 ### 实测数据
 

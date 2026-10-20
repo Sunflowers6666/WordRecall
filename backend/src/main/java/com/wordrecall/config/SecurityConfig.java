@@ -34,9 +34,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/wordbooks").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/words/*/audio").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(restAuthenticationEntryPoint))
+                // 音频等静态响应自己设置缓存头，不要被 Security 的 no-cache 覆盖
+                .headers(headers -> headers.cacheControl(cache -> cache.disable()))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
