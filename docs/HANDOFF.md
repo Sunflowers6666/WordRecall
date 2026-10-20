@@ -74,8 +74,9 @@ miniprogram_logic = 11 passed
 
 ### 未完成 / 待用户操作
 
-- **真实微信 `code2Session` 未执行**：AppID 已填，AppSecret 仍是 `CHANGE_ME`，需要你在微信公众平台生成后填到本地 `backend/application-secret.yml`
+- 真实 `code2Session` **凭据已验证**（2026-10-20）：本地 AppSecret 被微信接受（假 code 返回 `40029 invalid code`），后端日志 `wx login failed, errorCode=40029`，接口返回 400/50001。**还差一次真实 wx.login 的 code 走完整登录**
 - 小程序未在微信开发者工具/真机里跑过（静态检查与逻辑冒烟已过，渲染与真机行为待验证）
+- 「小程序代码上传密钥」曾误粘进 `application-secret.yml`，已清理；**需在公众平台重置该上传密钥**（阶段 6 会重新生成）
 - 云服务器未采购
 - Dependabot 未启用（可选，需用户确认）
 
@@ -167,12 +168,11 @@ Dependabot:      disabled（可选，启用前需用户确认）
 
 ## 8. 下一步（阶段 2 收尾）
 
-1. 微信开发者工具导入 `miniprogram/`，起本地后端，走一遍：日历 → 开始学习 → 复习 → 结果 → 切换词库 → 改昵称。
-2. 在微信公众平台生成 AppSecret，填到本地 `backend/application-secret.yml` 的 `WX_MINIAPP_SECRET`（不要发聊天）。
-3. 验证真实 `code2Session`：开发者工具里点「开始学习」会走真实 `wx.login`（需要 AppSecret 已填）。
-4. 真机调试：把 `miniprogram/config/index.js` 的 develop 地址改成电脑局域网 IP，手机与电脑同一网络。
-5. 云服务器采购、备案、微信后台 request 合法域名配置由用户完成。
-6. 阶段 2 不做用户自建词库/文件导入（阶段 4/5，入口默认关闭）。
+1. 微信开发者工具导入 `miniprogram/`，起本地后端（8080），走一遍：日历 → 开始学习（触发真实 `wx.login`）→ 复习 → 结果 → 切换词库 → 改昵称。
+2. 真机调试：把 `miniprogram/config/index.js` 的 develop 地址改成电脑局域网 IP，手机与电脑同一网络。
+3. 重置「小程序代码上传密钥」（误粘过），阶段 6 再正式生成并存入 GitHub Secret。
+4. 云服务器采购、备案、微信后台 request 合法域名配置由用户完成。
+5. 阶段 2 不做用户自建词库/文件导入（阶段 4/5，入口默认关闭）。
 
 ## 9. 新窗口启动提示（直接复制）
 
