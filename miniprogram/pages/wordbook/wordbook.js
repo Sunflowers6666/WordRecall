@@ -9,7 +9,8 @@ Page({
     errorKind: '',
     builtin: [],
     mine: [],
-    canCreate: feature.enableUserWordbook
+    canCreate: feature.enableUserWordbook,
+    canImport: feature.enableFileImport
   },
 
   onShow() {
@@ -56,6 +57,13 @@ Page({
       return
     }
     wx.navigateTo({ url: '/pages/wordbook-detail/wordbook-detail?id=' + item.id })
+  },
+
+  onImport() {
+    if (!this.data.canImport) {
+      return
+    }
+    wx.navigateTo({ url: '/pages/import/import' })
   },
 
   onCreate() {

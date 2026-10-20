@@ -12,7 +12,7 @@
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
 | GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
-| 当前阶段 | **阶段 4 自建词库已完成并合并**；下一步阶段 5（文件导入）/ 上线准备 |
+| 当前阶段 | **阶段 5 文件导入进行中**（后端完成，待真机验证）；阶段 4 已合并 |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -90,9 +90,9 @@ CET-6 = 5407
 IELTS = 5040
 users = 1
 learning_record = 0（测试数据已清理；真实登录验证时曾写入 40 条）
-backend_tests = 60 passed
+backend_tests = 74 passed
 miniprogram_checks = check.py OK（JSON/JS/WXML 静态检查）
-miniprogram_logic = 16 passed
+miniprogram_logic = 17 passed
 audio_us = 14296 个 mp3（138.4 MB，生成 565 秒，0 失败）
 examples = 14268 条入库：CET-4 3848/3849（100%）、CET-6 5392/5407（99.7%）、IELTS 5028/5040（99.8%）
 ```
@@ -232,30 +232,35 @@ backend 测试是否通过，然后按 HANDOFF 的“下一步”继续。
 - 区分两个东西：**AppSecret**（32 位字母数字）与**上传密钥**（`-----BEGIN RSA PRIVATE KEY-----` 开头的私钥），后者只用于阶段 6 的 CI 上传。
 - **2026-10-20 secret scanning 告警 #1**：GitHub 把 `miniprogram/project.config.json` 里的 **AppID** 标成 `tencent_wechat_api_app_id`。AppID 本就是公开信息（每个小程序客户端里都有），**不是密钥**；已在 GitHub 上标记为 `false_positive` 解决，当前 open 告警为 0。真正保密的 AppSecret 从未进入仓库。
 
-## 11. 阶段 4：自建词库（2026-10-20，待真机验证）
+## 11. 阶段 4：自建词库（已合并，PR #8 → develop，2026-10-20）
 
-### 已完成（分支 `feature/stage-4-wordbook`，Issue #7）
+- 数据库：`wordbook.owner_id` + `idx_wordbook_owner` + 外键（本机已应用）；迁移脚本 `db/migration-v4-wordbook-owner.sql`
+- 后端 60 单测 + 19 项接口冒烟：词库 CRUD、词条 CRUD、单词详情；权限（预置只读 404、非本人 404、重名/重复词 409、删当前词库置空）
+- 小程序：词库页分组与新建、`pages/wordbook-detail`、`pages/word-edit`
+- 真机验证通过；Issue #7 已关闭
 
-- 数据库：`wordbook.owner_id` + `idx_wordbook_owner` + 外键（**已应用到本机 wordapp 库**）；迁移脚本 `db/migration-v4-wordbook-owner.sql`；`schema.sql` 已加 `owner_id` 列与索引
-- 后端（**60 个单测 + 19 项接口冒烟全过**）：
-  - `domain/Wordbook.ownerId`；`WordbookDto` 增加 `editable`、`source`
-  - 新增 `WordbookCreateRequest`、`WordbookUpdateRequest`、`WordItemRequest`、`WordbookWordsDto`
-  - `WordbookService`：`listForUser` / `listBuiltin` / `create` / `update` / `delete` / `requireOwned`
-  - `WordService`：`requireById` / `listByWordbook` / `countInWordbook` / `add` / `update` / `delete` / `nextSortOrder`
-  - `WordbookController`：`GET/POST /api/wordbooks`、`PATCH/DELETE /api/wordbooks/{id}`、`GET/POST /api/wordbooks/{id}/words`
-  - `WordController`：`GET/PUT/DELETE /api/words/{id}`
-- 权限：预置词库只读（改/删一律 404）；非本人词库 404；重名 409；重复单词 409；删当前词库由外键置空 `current_wordbook_id`
-- 小程序（页面逻辑冒烟 16 项通过）：
-  - 词库页：预置 / 我的 分组，`+ 新建`（`enableUserWordbook` 开关控制）
-  - 新增 `pages/wordbook-detail`：词条列表、设为当前词库、改名、删除词库、添加入口
-  - 新增 `pages/word-edit`：新增/编辑词条表单（单词、音标、释义、例句、翻译），编辑时可删除
-  - `config/feature.js` 的 `enableUserWordbook` 本地已设为 `true`
+## 12. 阶段 5：文件导入（进行中，分支 `feature/stage-5-import`，Issue #9）
+
+### 已完成
+
+- 后端依赖：Apache POI 5.2.5（xlsx）+ commons-csv 1.10.0
+- `SheetParser`：CSV（UTF-8/GBK、逗号/分号/Tab、可选表头）与 xlsx（第一个工作表）
+  - 表头别名：`word/spelling/单词/词汇/英文`、`phonetic/音标`、`meaning/释义/中文/翻译`、`example/例句`、`例句翻译`
+  - 无表头时按「单词, 释义, 音标, 例句, 例句翻译」取列
+  - 缺单词/缺释义的行标记为无效并给原因
+- `ImportService` + `ImportController`：
+  - `POST /api/imports/preview`（multipart）→ `{fileName,total,valid,invalid,rows(前50)}`
+  - `POST /api/imports?bookId=` 或 `?newBookName=`（multipart）→ `{bookId,bookName,total,imported,skippedDuplicate,skippedInvalid,problems}`
+  - 文件内重复、库内重复均跳过并计数；≤5000 行、≤5MB（`MaxUploadSizeExceededException` → 400）
+- 单测 60 → **74**；接口冒烟 12 项通过（含 GBK、重复导入、越权 404）
+- 小程序：新增 `pages/import/import`（选文件 → 预览 → 选去向 → 导入 → 结果），词库页加「导入」入口（`enableFileImport`，本地已开）
+- 页面逻辑冒烟 16 → **17** 项
 
 ### 待做
 
-1. **真机验证**：新建词库 → 加 5 个词 → 设为当前 → 开始学习能取到这些词
-2. 走 PR → 合并 develop → 关 Issue #7
-3. 发布前决定 `enableUserWordbook` 默认值（当前 true）；阶段 5 再做 CSV/Excel 导入
+1. 真机验证：微信里把 CSV/xlsx 发到「文件传输助手」→ 小程序选文件 → 导入
+2. 走 PR → 合并 develop → 关 Issue #9
+3. 发布前决定 `enableUserWordbook` / `enableFileImport` 默认值（当前都为 true）
 
 ### 环境
 

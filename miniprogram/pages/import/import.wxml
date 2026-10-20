@@ -1,0 +1,100 @@
+<view class="page">
+  <view class="page-body page-body-with-bar">
+    <!-- 选文件 -->
+    <view wx:if="{{state === 'idle'}}" class="card picker-card">
+      <view class="picker-icon">📄</view>
+      <view class="picker-title">选择词表文件</view>
+      <view class="t-caption picker-tip">支持 .csv（UTF-8/GBK）与 .xlsx；表头可用「单词, 释义, 音标, 例句, 例句翻译」</view>
+      <view class="btn btn-primary picker-btn" bindtap="onChooseFile">选择文件</view>
+    </view>
+
+    <!-- 解析中 -->
+    <state-view wx:elif="{{state === 'parsing'}}" state="loading"></state-view>
+
+    <!-- 解析失败 -->
+    <block wx:elif="{{state === 'error'}}">
+      <state-view state="error" kind="{{errorKind}}" bind:action="onRetry"></state-view>
+    </block>
+
+    <!-- 预览 + 选去向 -->
+    <block wx:elif="{{state === 'preview' || state === 'importing'}}">
+      <view class="card">
+        <view class="file-row">
+          <view class="file-name">{{file.name}}</view>
+          <view class="link" bindtap="onReset">换一个</view>
+        </view>
+        <view class="summary-row">
+          <view class="pill">共 {{preview.total}} 行</view>
+          <view class="pill ok">可导入 {{preview.valid}}</view>
+          <view wx:if="{{preview.invalid > 0}}" class="pill warn">跳过 {{preview.invalid}}</view>
+        </view>
+      </view>
+
+      <view class="section-title">预览（前 {{preview.rows.length}} 行）</view>
+      <view class="card list">
+        <view class="row {{item.ok ? '' : 'row-bad'}}" wx:for="{{preview.rows}}" wx:key="row">
+          <view class="row-main">
+            <view class="row-word">{{item.spelling || '（空）'}}</view>
+            <view class="row-meaning">{{item.meaning || '（无释义）'}}</view>
+          </view>
+          <view wx:if="{{!item.ok}}" class="row-reason">{{item.reason}}</view>
+        </view>
+      </view>
+
+      <view class="section-title">导入到</view>
+      <view class="card">
+        <view class="target-row" bindtap="onTargetChange" data-target="new">
+          <view class="radio {{target === 'new' ? 'radio-on' : ''}}"></view>
+          <view class="target-body">
+            <view class="target-title">新建词库</view>
+            <input wx:if="{{target === 'new'}}" class="name-input" value="{{newName}}"
+                   bindinput="onNewNameInput" placeholder="词库名称" placeholder-class="ph" />
+          </view>
+        </view>
+
+        <view class="target-row" bindtap="onTargetChange" data-target="existing">
+          <view class="radio {{target === 'existing' ? 'radio-on' : ''}}"></view>
+          <view class="target-body">
+            <view class="target-title">已有词库</view>
+            <picker wx:if="{{target === 'existing' && books.length}}" mode="selector"
+                    range="{{books}}" range-key="name" value="{{bookIndex}}" bindchange="onBookChange">
+              <view class="picker-value">{{books[bookIndex].name}} ›</view>
+            </picker>
+            <view wx:elif="{{target === 'existing'}}" class="t-caption">还没有自建词库，请选「新建」</view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 结果 -->
+    <block wx:elif="{{state === 'done'}}">
+      <view class="card result-card">
+        <view class="result-num">{{result.imported}}</view>
+        <view class="result-label">个单词已导入「{{result.bookName}}」</view>
+        <view wx:if="{{result.skippedDuplicate > 0}}" class="t-caption">重复跳过 {{result.skippedDuplicate}} 个</view>
+        <view wx:if="{{result.skippedInvalid > 0}}" class="t-caption">无效跳过 {{result.skippedInvalid}} 行</view>
+      </view>
+
+      <view wx:if="{{result.problems.length}}" class="section-title">未导入的行</view>
+      <view wx:if="{{result.problems.length}}" class="card list">
+        <view class="row row-bad" wx:for="{{result.problems}}" wx:key="row">
+          <view class="row-main">
+            <view class="row-word">{{item.spelling || '（空）'}}</view>
+            <view class="row-meaning">第 {{item.row}} 行</view>
+          </view>
+          <view class="row-reason">{{item.reason}}</view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{state === 'preview' || state === 'importing'}}" class="bottom-bar">
+    <view class="btn btn-primary save-btn {{state === 'importing' ? 'btn-disabled' : ''}}" bindtap="onImport">
+      {{state === 'importing' ? '导入中…' : '开始导入'}}
+    </view>
+  </view>
+
+  <view wx:if="{{state === 'done'}}" class="bottom-bar">
+    <view class="btn btn-primary save-btn" bindtap="onDone">完成</view>
+  </view>
+</view>

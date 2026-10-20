@@ -31,7 +31,7 @@ async function checkAsync(name, fn) {
 }
 
 const storage = {}
-const calls = { navigateTo: [], redirectTo: [], switchTab: [], toast: [], requests: [] }
+const calls = { navigateTo: [], redirectTo: [], switchTab: [], toast: [], requests: [], uploads: [] }
 
 let todayIso = new Date().getFullYear() + '-' +
   String(new Date().getMonth() + 1).padStart(2, '0') + '-' +
@@ -106,6 +106,36 @@ global.wx = {
   navigateBack: () => calls.navigateTo.push('back'),
   stopPullDownRefresh: () => {},
   login: (opts) => opts.success({ code: 'fake-code' }),
+  chooseMessageFile: (opts) => {
+    opts.success({ tempFiles: [{ name: 'demo.csv', path: '/tmp/demo.csv', size: 120 }] })
+  },
+  uploadFile: (opts) => {
+    calls.uploads.push({ url: opts.url, fields: opts.formData })
+    setTimeout(() => {
+      const isPreview = opts.url.indexOf('/api/imports/preview') >= 0
+      const data = isPreview
+        ? {
+            fileName: 'demo.csv',
+            total: 3,
+            valid: 2,
+            invalid: 1,
+            rows: [
+              { row: 1, spelling: 'alpha', meaning: '阿尔法', ok: true, reason: '' },
+              { row: 3, spelling: 'broken', meaning: '', ok: false, reason: '缺少释义' }
+            ]
+          }
+        : {
+            bookId: 11,
+            bookName: 'demo',
+            total: 3,
+            imported: 2,
+            skippedDuplicate: 0,
+            skippedInvalid: 1,
+            problems: [{ row: 3, spelling: 'broken', meaning: '', ok: false, reason: '缺少释义' }]
+          }
+      opts.success({ statusCode: 200, data: JSON.stringify({ code: 0, message: 'ok', data }) })
+    }, 0)
+  },
   request: (opts) => {
     const pathOnly = opts.url.replace(/^https?:\/\/[^/]+/, '').split('?')[0]
     calls.requests.push({ method: opts.method, path: pathOnly, body: opts.data })
@@ -360,6 +390,27 @@ const dateUtil = require('../utils/date')
     await flush()
     assert.strictEqual(wordEditEdit.data.isNew, false)
     assert.strictEqual(wordEditEdit.data.form.spelling, 'alpha')
+  })
+
+  const importPage = loadPage('../pages/import/import')
+
+  await checkAsync('导入页：解析预览后导入到新词库', async () => {
+    storage.wr_token = 'fake-token'
+    importPage.onLoad()
+    await flush()
+    importPage.onChooseFile()
+    await flush()
+    assert.strictEqual(importPage.data.state, 'preview')
+    assert.strictEqual(importPage.data.preview.total, 3)
+    assert.strictEqual(importPage.data.preview.invalid, 1)
+    assert.strictEqual(importPage.data.newName, 'demo')
+
+    await importPage.onImport()
+    await flush()
+    assert.strictEqual(importPage.data.state, 'done')
+    assert.strictEqual(importPage.data.result.imported, 2)
+    assert.strictEqual(calls.uploads.length, 2)
+    assert.ok(calls.uploads[1].url.indexOf('newBookName=demo') > 0, calls.uploads[1].url)
   })
 
   console.log('')

@@ -7,7 +7,8 @@
     "pages/profile/profile",
     "pages/wordbook/wordbook",
     "pages/wordbook-detail/wordbook-detail",
-    "pages/word-edit/word-edit"
+    "pages/word-edit/word-edit",
+    "pages/import/import"
   ],
   "window": {
     "backgroundTextStyle": "dark",

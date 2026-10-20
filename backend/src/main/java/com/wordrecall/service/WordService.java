@@ -109,6 +109,25 @@ public class WordService {
         return last.get(0).getSortOrder() + 1;
     }
 
+    /** 词库当前最大排序号；空库返回 0。 */
+    public int maxSortOrder(Long wordbookId) {
+        List<Word> last = wordMapper.selectList(Wrappers.<Word>lambdaQuery()
+                .select(Word::getSortOrder)
+                .eq(Word::getWordbookId, wordbookId)
+                .orderByDesc(Word::getSortOrder)
+                .last("LIMIT 1"));
+        if (last.isEmpty() || last.get(0).getSortOrder() == null) {
+            return 0;
+        }
+        return last.get(0).getSortOrder();
+    }
+
+    /** 批量导入用：排序号由调用方给，跳过查 max 的开销。 */
+    public Word save(Word word) {
+        wordMapper.insert(word);
+        return word;
+    }
+
     private String trimToNull(String value) {
         if (value == null) {
             return null;
