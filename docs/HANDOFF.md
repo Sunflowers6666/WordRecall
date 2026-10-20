@@ -61,6 +61,16 @@
 - 真实接口验证：预览 5 词 → 0 条记录；上报 1 → 1 条；重复上报 → 0；再报 2 → 3 条；再次预览自动跳过已记录的 3 个
 - 未验证：真机 iOS / Android（需要局域网 IP + 同一网络）
 
+### 阶段 3（进行中，分支 `feature/stage-3-learning`，PR #6）
+
+- 学习统计接口 `GET /api/users/me/stats`：累计天数/词数、错词、连续天数（今天没学时从昨天起算）、今日词数
+- `user.batch_size`（10/20/30，默认 20）+ 迁移脚本 `db/migration-v3-batch-size.sql`；`PATCH /api/users/me` 支持 `{nickname?, batchSize?}`
+- `POST /api/study/sessions` 的 `size` 改为可选，缺省用用户设置
+- 单测 32 → **41 全部通过**；真实接口冒烟 9 项通过
+- **UI 2.0 令牌 v2 已落地**：蓝白 + 厚按钮（`app.wxss`、tabBar、两个组件、全部页面）；「我的」页新增统计卡与每批词数选择；学习页不再传 size
+- 页面逻辑冒烟 12 项通过（新增“我的页统计与每批词数”）
+- 待做：例句（DeepSeek 批量生成，等 key）、真机适配
+
 ### 实测数据
 
 ```text
@@ -70,7 +80,7 @@ CET-6 = 5407
 IELTS = 5040
 users = 1
 learning_record = 0（测试数据已清理；真实登录验证时曾写入 40 条）
-backend_tests = 32 passed
+backend_tests = 41 passed
 miniprogram_checks = check.py OK（JSON/JS/WXML 静态检查）
 miniprogram_logic = 11 passed
 ```

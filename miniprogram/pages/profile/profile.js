@@ -2,25 +2,44 @@ const { request } = require('../../utils/request')
 const { ensureLogin, getUser, saveUser } = require('../../utils/auth')
 const { toastError } = require('../../utils/feedback')
 
+const BATCH_OPTIONS = [10, 20, 30]
+
 Page({
   data: {
     user: null,
     initial: '单',
     wordbookName: '',
-    version: '1.0.0'
+    version: '1.0.0',
+    stats: null,
+    batchSize: 20
   },
 
   onShow() {
     this.syncUser()
     this.loadWordbook()
+    this.loadStats()
   },
 
   syncUser() {
     const user = getUser()
     this.setData({
       user,
-      initial: user && user.nickname ? user.nickname.slice(0, 1) : '单'
+      initial: user && user.nickname ? user.nickname.slice(0, 1) : '单',
+      batchSize: (user && user.batchSize) || 20
     })
+  },
+
+  async loadStats() {
+    if (!getUser()) {
+      this.setData({ stats: null })
+      return
+    }
+    try {
+      const stats = await request({ url: '/api/users/me/stats' })
+      this.setData({ stats })
+    } catch (error) {
+      this.setData({ stats: null })
+    }
   },
 
   async loadWordbook() {
@@ -38,6 +57,7 @@ Page({
       const user = await ensureLogin()
       saveUser(user)
       this.syncUser()
+      this.loadStats()
       wx.showToast({ title: '已登录', icon: 'none' })
     } catch (error) {
       toastError(error)
@@ -72,6 +92,36 @@ Page({
           saveUser(user)
           that.syncUser()
           wx.showToast({ title: '已保存', icon: 'none' })
+        } catch (error) {
+          toastError(error)
+        }
+      }
+    })
+  },
+
+  onBatchSize() {
+    if (!this.data.user) {
+      this.onLogin()
+      return
+    }
+    const that = this
+    const labels = BATCH_OPTIONS.map((size) => size + ' 词')
+    wx.showActionSheet({
+      itemList: labels,
+      success: async (res) => {
+        const batchSize = BATCH_OPTIONS[res.tapIndex]
+        if (!batchSize || batchSize === that.data.batchSize) {
+          return
+        }
+        try {
+          const user = await request({
+            url: '/api/users/me',
+            method: 'PATCH',
+            data: { batchSize }
+          })
+          saveUser(user)
+          that.syncUser()
+          wx.showToast({ title: '每批 ' + batchSize + ' 词', icon: 'none' })
         } catch (error) {
           toastError(error)
         }

@@ -53,3 +53,7 @@ miniprogram/miniprogram_npm/
 
 # ---- Local environment ----
 *.local
+
+# ---- Local LLM config ----
+llm-secret.yml
+**/llm-secret.yml

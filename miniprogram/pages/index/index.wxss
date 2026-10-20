@@ -41,6 +41,7 @@
 
 .calendar {
   padding: 24rpx 16rpx;
+  box-shadow: var(--sh-card);
 }
 
 .week-row {
@@ -86,7 +87,7 @@
 }
 
 .day-today .day-num {
-  border: 2rpx solid var(--c-brand);
+  border: 3rpx solid var(--c-brand);
   box-sizing: border-box;
 }
 
@@ -142,13 +143,13 @@
 .wb-chip {
   display: flex;
   align-items: center;
-  height: 88rpx;
-  padding: 0 24rpx;
+  height: 76rpx;
+  padding: 0 32rpx;
   background: var(--c-brand-tint);
   color: var(--c-brand);
   border-radius: var(--r-chip);
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .caret {

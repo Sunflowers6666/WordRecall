@@ -7,10 +7,35 @@
       <view wx:if="{{!user}}" class="btn btn-primary login-btn" bindtap="onLogin">登录</view>
     </view>
 
+    <view wx:if="{{stats}}" class="card stats-card">
+      <view class="stat">
+        <view class="stat-num t-num">{{stats.learnedDays}}</view>
+        <view class="stat-label">学习天数</view>
+      </view>
+      <view class="stat">
+        <view class="stat-num t-num">{{stats.learnedWords}}</view>
+        <view class="stat-label">累计单词</view>
+      </view>
+      <view class="stat">
+        <view class="stat-num t-num stat-streak">{{stats.streakDays}}</view>
+        <view class="stat-label">连续天数</view>
+      </view>
+      <view class="stat">
+        <view class="stat-num t-num stat-wrong">{{stats.wrongWords}}</view>
+        <view class="stat-label">错词</view>
+      </view>
+    </view>
+
     <view class="card list profile-list">
       <view class="list-row" bindtap="onEditNickname">
         <view class="list-row-main">昵称</view>
         <view class="list-row-value">{{user.nickname || '未设置'}}</view>
+        <view class="list-row-arrow">›</view>
+      </view>
+
+      <view class="list-row" bindtap="onBatchSize">
+        <view class="list-row-main">每批词数</view>
+        <view class="list-row-value">{{batchSize}} 词</view>
         <view class="list-row-arrow">›</view>
       </view>
 

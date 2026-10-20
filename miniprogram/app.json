@@ -9,14 +9,14 @@
   ],
   "window": {
     "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#F6F7F5",
+    "navigationBarBackgroundColor": "#F5F7FA",
     "navigationBarTitleText": "单词日历",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#F6F7F5"
+    "backgroundColor": "#F5F7FA"
   },
   "tabBar": {
-    "color": "#6E7783",
-    "selectedColor": "#2C6E5B",
+    "color": "#6B7280",
+    "selectedColor": "#2B7FFF",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "black",
     "list": [
