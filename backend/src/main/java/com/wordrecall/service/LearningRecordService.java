@@ -140,4 +140,31 @@ public class LearningRecordService {
 
     public record ReviewOutcome(int total, int wrong) {
     }
+
+    /** 全部学习记录，按「词 ASC、日期 DESC、id DESC」排，方便取每个词的最新一条。 */
+    public List<LearningRecord> findByUserOrdered(Long userId) {
+        return learningRecordMapper.selectList(Wrappers.<LearningRecord>lambdaQuery()
+                .eq(LearningRecord::getUserId, userId)
+                .orderByAsc(LearningRecord::getWordId)
+                .orderByDesc(LearningRecord::getLearnDate)
+                .orderByDesc(LearningRecord::getId));
+    }
+
+    /** 某个词最近的一条学习记录。 */
+    public LearningRecord findLatestForWord(Long userId, Long wordId) {
+        List<LearningRecord> records = learningRecordMapper.selectList(Wrappers.<LearningRecord>lambdaQuery()
+                .eq(LearningRecord::getUserId, userId)
+                .eq(LearningRecord::getWordId, wordId)
+                .orderByDesc(LearningRecord::getLearnDate)
+                .orderByDesc(LearningRecord::getId)
+                .last("LIMIT 1"));
+        return records.isEmpty() ? null : records.get(0);
+    }
+
+    /** 把某条记录标记为「已掌握」（is_wrong=0）。 */
+    public int clearWrong(Long recordId) {
+        return learningRecordMapper.update(null, Wrappers.<LearningRecord>lambdaUpdate()
+                .eq(LearningRecord::getId, recordId)
+                .set(LearningRecord::getIsWrong, Boolean.FALSE));
+    }
 }

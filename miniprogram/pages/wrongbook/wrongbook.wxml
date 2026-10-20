@@ -1,0 +1,59 @@
+<view class="page">
+  <block wx:if="{{mode === 'list'}}">
+    <view class="page-body page-body-with-bar">
+      <state-view wx:if="{{state === 'loading'}}" state="loading"></state-view>
+
+      <state-view wx:elif="{{state === 'error'}}" state="error" kind="{{errorKind}}" bind:action="onRetry"></state-view>
+
+      <block wx:elif="{{total === 0}}">
+        <view class="card empty">
+          <view class="empty-emoji">🎉</view>
+          <view class="t-secondary">错词本是空的</view>
+          <view class="t-caption">复习时点「没记住」的词会进到这里</view>
+        </view>
+      </block>
+
+      <block wx:else>
+        <view class="card head">
+          <view class="head-num">{{total}}</view>
+          <view class="t-caption">个单词还没掌握</view>
+        </view>
+
+        <view class="card list">
+          <view class="row" wx:for="{{words}}" wx:key="id">
+            <view class="row-main">
+              <view class="row-word">{{item.spelling}}</view>
+              <view class="row-meaning">{{item.meaning}}</view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <view wx:if="{{state === 'ready' && total > 0}}" class="bottom-bar">
+      <view class="btn btn-primary start-btn" bindtap="onStart">开始复习</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{mode === 'review'}}">
+    <view class="page-body page-body-with-bar">
+      <view class="review-head">
+        <view class="review-title">错词复习</view>
+        <view class="t-sub t-num">{{index + 1}} / {{words.length}}</view>
+      </view>
+
+      <view class="progress-track">
+        <view class="progress-bar" style="width: {{progressPercent}}%"></view>
+      </view>
+
+      <word-card word="{{current}}" revealed="{{true}}"></word-card>
+
+      <view class="finish-link" bindtap="onFinishEarly">结束并保存</view>
+    </view>
+
+    <view class="action-bar">
+      <view class="btn btn-secondary" bindtap="onForgot">没记住</view>
+      <view class="btn btn-primary" bindtap="onRemember">记住了</view>
+    </view>
+  </block>
+</view>

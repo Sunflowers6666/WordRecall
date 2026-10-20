@@ -90,9 +90,9 @@ CET-6 = 5407
 IELTS = 5040
 users = 1
 learning_record = 0（测试数据已清理；真实登录验证时曾写入 40 条）
-backend_tests = 74 passed
+backend_tests = 78 passed
 miniprogram_checks = check.py OK（JSON/JS/WXML 静态检查）
-miniprogram_logic = 17 passed
+miniprogram_logic = 18 passed
 audio_us = 14296 个 mp3（138.4 MB，生成 565 秒，0 失败）
 examples = 14268 条入库：CET-4 3848/3849（100%）、CET-6 5392/5407（99.7%）、IELTS 5028/5040（99.8%）
 ```
@@ -259,3 +259,13 @@ scripts\setup\windows\start-backend.cmd     :: 8080，真机用 172.20.242.224:8
 ```
 
 注意：其它环境（服务器/新机器）建库时需要执行 `migration-v4-wordbook-owner.sql`。
+
+## 13. 体验增强：错词本（进行中，分支 `feature/wrongbook`，Issue #11）
+
+- 语义：每个词以**最近一条** `learning_record` 的 `is_wrong` 为准，跨天汇总；之后答对就移出
+- 后端：`GET /api/wrongbook?offset=&limit=`、`POST /api/wrongbook/submit {rememberedWordIds}`
+  - `LearningRecordService` 新增 `findByUserOrdered` / `findLatestForWord` / `clearWrong`
+- 单测 74 → **78**；接口冒烟 9 项通过（造错词 → 列表 → 清除 → 列表减少）
+- 小程序：`pages/wrongbook`（列表 → 开始复习卡片流 → 记住的提交清除），「我的」页加错词本入口与数量
+- 页面逻辑冒烟 17 → **18**
+- 待做：真机验证 → PR → 关 Issue #11
