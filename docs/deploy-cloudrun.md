@@ -33,21 +33,35 @@
 2. 小程序管理员微信登录 → 创建环境（按量付费）→ 绑定 AppID `wx1a3282cb951d51b8`
 3. 记下环境 ID 与默认域名
 
-## 3. 创建 MySQL 并导入数据
+## 3. 开通云托管 MySQL 并导入数据
 
-1. 云托管控制台 → 数据库 → MySQL → 新建（记下内网地址、用户名、密码、库名）
-2. 本地导出：
+> 云托管的 MySQL **不在「免费快速部署」模板列表里**，它是独立资源：
+> 控制台左侧菜单 **数据库 → MySQL** → 首次进入弹「开通」→ 设 root 密码 → 选 **MySQL 8.0** → 开通（约几分钟）。
 
-```bat
-mysqldump --defaults-extra-file="E:\Develop\MySQL\.secrets\client-root.cnf" ^
-  --single-transaction --routines --triggers wordapp > E:\Develop\_downloads\wordapp.sql
+- **必须选 8.0**：建表与导出的 dump 使用 `utf8mb4_0900_ai_ci`，5.7 不支持
+- 大小写敏感：8.0 开通后不可改，建议选**不敏感**
+- 开通后记下**内网地址**（同一环境内的服务可直连）
+
+建库与导入：
+
+```sql
+CREATE DATABASE wordapp DEFAULT CHARACTER SET utf8mb4;
 ```
 
-3. 导入到云托管 MySQL（控制台导入或本机 mysql 客户端连公网地址）：
+导入方式（建议，数据约 2.7MB）：
+
+1. 数据库页面临时**开启外网地址**
+2. 本机执行：
 
 ```bat
-mysql -h <云托管MySQL地址> -P <端口> -u <用户> -p < E:\Develop\_downloads\wordapp.sql
+mysql -h <外网地址> -P <端口> -u root -p wordapp < E:\Develop\_downloads\wordapp.sql
 ```
+
+3. 导入完成后**关闭外网地址**
+
+> 注意：MySQL Serverless 默认「自动暂停」（10 分钟无连接暂停，暂停时只收存储费）。
+> 恢复瞬间可能返回 `CynosDB serverless instance is resuming` 错误，导致第一个请求失败。
+> 体验版建议**关闭自动暂停**（费用略高但稳定）；不关闭的话需要在后端加一次重试。
 
 ## 4. 部署服务（路线 1：GitHub 构建）
 
