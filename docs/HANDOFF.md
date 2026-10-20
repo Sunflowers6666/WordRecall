@@ -1,6 +1,6 @@
 # WordRecall 交接文档
 
-> 更新时间：2026-10-20 18:25（Asia/Shanghai）
+> 更新时间：2026-10-20 19:55（Asia/Shanghai）
 > 新窗口请先读本文件，再读 `README.md` 和 `git log`。本文件不包含任何密码、PAT、AppSecret、JWT 密钥。
 
 ## 1. 项目基本信息
@@ -12,7 +12,7 @@
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
 | GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
-| 当前阶段 | **阶段 2 已完成并合并到 develop**；下一步真机适配 / 阶段 3 |
+| 当前阶段 | **阶段 3 已完成并合并到 develop**；下一步真机验证 / 阶段 4 |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -61,7 +61,7 @@
 - 真实接口验证：预览 5 词 → 0 条记录；上报 1 → 1 条；重复上报 → 0；再报 2 → 3 条；再次预览自动跳过已记录的 3 个
 - 未验证：真机 iOS / Android（需要局域网 IP + 同一网络）
 
-### 阶段 3（进行中，分支 `feature/stage-3-learning`，PR #6）
+### 阶段 3（已合并，PR #6 → develop，2026-10-20）
 
 - 学习统计接口 `GET /api/users/me/stats`：累计天数/词数、错词、连续天数（今天没学时从昨天起算）、今日词数
 - `user.batch_size`（10/20/30，默认 20）+ 迁移脚本 `db/migration-v3-batch-size.sql`；`PATCH /api/users/me` 支持 `{nickname?, batchSize?}`
@@ -107,14 +107,15 @@ examples = 14268 条入库：CET-4 3848/3849（100%）、CET-6 5392/5407（99.7%
 
 ```text
 main:                        阶段 1 完成，与 develop 同步（v1.0.0 时打 tag）
-develop:                     c0119e3 Merge pull request #4（阶段 2 全部内容）
+develop:                     8354393 Merge pull request #6（阶段 3 全部内容）+ 后续文档提交
+feature/stage-3-learning:    已合并，远程分支已删除
 feature/stage-2-miniprogram: 已合并，远程分支已删除
 feature/stage-1-backend:     已合并，保留
 工作区:                      clean
 远程:                        origin https://github.com/Sunflowers6666/WordRecall.git
 已推送:                      是（main / develop）
-Issue:                       #1 CLOSED；#3 CLOSED（阶段 2）
-PR:                          #2 MERGED；#4 MERGED
+Issue:                       #1 #3 #5 全部 CLOSED
+PR:                          #2 #4 #6 全部 MERGED
 ```
 
 分支策略：`main` 稳定、`develop` 集成、`feature/*` 功能分支；每个阶段 PR 到 `develop` 后删除功能分支。`main` 按计划在阶段 6 统一更新。
@@ -195,13 +196,16 @@ Dependabot:      disabled（可选，启用前需用户确认）
 
 如凭据丢失或 `gh auth status` 显示未登录：重新创建一个 Classic PAT（`repo`、`workflow`、`read:org`），保存到 `E:\Develop\_downloads\gh-token.txt`，执行 `gh auth login --with-token < "E:\Develop\_downloads\gh-token.txt"`，然后立即删除文件。**不要把 PAT 发到聊天。**
 
-## 8. 下一步（阶段 3）
+## 8. 下一步（真机验证 → 阶段 4）
 
-1. 真机调试（可选但建议）：把 `miniprogram/config/index.js` 的 develop 地址改成电脑局域网 IP，手机与电脑同一网络。
-2. 重置「小程序代码上传密钥」（误粘过），阶段 6 再正式生成并存入 GitHub Secret。
-3. 阶段 3 规划（待与用户确认范围）：学习统计（累计学习天数/词数）、每批词数设置、错词本、订阅消息提醒。
-4. 云服务器采购、备案、微信后台 request 合法域名配置由用户完成（阶段 6 前）。
-5. 自建词库/文件导入仍在阶段 4/5，入口默认关闭。
+1. **真机验证**（当前重点）：
+   - 电脑 IP `172.20.242.224`（WLAN「SanXiaU」），已写入 `miniprogram/config/index.js`；IP 变了要改
+   - 后端监听 `0.0.0.0:8080`；Windows 防火墙对 java 有 Public 入站放行规则
+   - 手机与电脑连同一 WiFi → 开发者工具「预览」或「真机调试」扫码 → 手机右上角「…」→ 打开调试（跳过域名校验）
+   - 先测：首页词库名 → 开始学习 → 卡片例句 → 点 🔊 美 → 我的页统计
+2. 英音（可选）：Windows 装 English (UK) 语音包 → `python scripts\dict\generate_audio.py --accent uk` → 卡片加「🔊 英」
+3. 阶段 4 规划（待确认）：自建词库 + 文件导入（1.0 开关默认关闭）
+4. 云服务器采购、备案、微信后台 request 合法域名（阶段 6 前）
 
 ## 9. 新窗口启动提示（直接复制）
 
