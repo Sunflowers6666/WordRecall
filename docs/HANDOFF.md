@@ -1,6 +1,6 @@
 # WordRecall 交接文档
 
-> 更新时间：2026-10-20 15:15（Asia/Shanghai）
+> 更新时间：2026-10-20 16:40（Asia/Shanghai）
 > 新窗口请先读本文件，再读 `README.md` 和 `git log`。本文件不包含任何密码、PAT、AppSecret、JWT 密钥。
 
 ## 1. 项目基本信息
@@ -11,8 +11,8 @@
 | 代码仓库 | WordRecall |
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
-| GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（尚未创建/推送） |
-| 当前阶段 | 阶段 1 本地完成，等待 GitHub PAT 授权后推送 |
+| GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
+| 当前阶段 | **阶段 1 已完成并合并到 develop**；阶段 2 待开始 |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -30,6 +30,10 @@
 - 应用启动成功；`GET /api/health` 200
 - README、LICENSE、NOTICE、Issue/PR 模板、`backend-test.yml`
 - 微信开发者工具缓存已迁到 `E:\Develop\WeChatDevTools\User Data`（Junction）
+- GitHub 仓库已创建并推送 `main`、`develop`、`feature/stage-1-backend`
+- 阶段 1 Issue **#1** 已关闭；PR **#2** 已合并到 `develop`
+- GitHub Actions `backend-test` 在 PR #2 上通过（30s）
+- Secret scanning 与 Push protection 均为 enabled
 
 ### 实测数据
 
@@ -43,26 +47,26 @@ users = 0
 
 ### 未完成 / 待用户操作
 
-- `gh` 尚未登录，GitHub 仓库未创建，代码未推送
-- 阶段 1 Issue / PR / Actions 未创建
-- Secret scanning / Push protection 未检查
 - 真实微信 `code2Session` 未执行（AppID/AppSecret 仍是 `CHANGE_ME`）
 - 云服务器未采购
 - 阶段 2 小程序页面未开始
+- Dependabot 未启用（可选，需用户确认）
 
 ## 3. Git 状态
 
 ```text
 main:                       e9b79cb chore: 记录微信开发者工具缓存迁移
-develop:                    e9b79cb
-feature/stage-1-backend:    2463fc6 feat(backend): 阶段 1 后端骨架、词库导入与微信登录
-                            + 交接文档提交
+develop:                    9dadeb2 Merge pull request #2 from .../feature/stage-1-backend
+feature/stage-1-backend:    3c629c3 docs: 添加跨会话交接文档（已合并）
 工作区:                     clean
 远程:                       origin https://github.com/Sunflowers6666/WordRecall.git
-已推送:                     否
+已推送:                     是（main / develop / feature）
+Issue:                      #1 CLOSED
+PR:                         #2 MERGED
+CI:                         run 39394653123 SUCCESS（backend-test）
 ```
 
-分支策略：`main` 稳定、`develop` 集成、`feature/*` 功能分支；阶段 1 完成后 PR 到 `develop`。
+分支策略：`main` 稳定、`develop` 集成、`feature/*` 功能分支；阶段 1 已 PR 到 `develop`。`main` 按计划在阶段 6 统一更新。
 
 ## 4. 本机环境
 
@@ -75,7 +79,7 @@ feature/stage-1-backend:    2463fc6 feat(backend): 阶段 1 后端骨架、词�
 | 密钥目录 | `E:\Develop\MySQL\.secrets\`（root/app，禁止提交） |
 | Maven 备用 | `E:\Develop\Maven\apache-maven-3.10.0`，不加入 PATH |
 | Maven 仓库 | `%USERPROFILE%\.m2\settings.xml` → `E:/Develop/Maven/repository` |
-| GitHub CLI | `E:\Develop\gh\bin\gh.exe`，2.102.0，未登录 |
+| GitHub CLI | `E:\Develop\gh\bin\gh.exe`，2.102.0，已登录 `Sunflowers6666`（PAT 已导入；token 文件已删除；凭据在 Windows Credential Manager） |
 | 微信开发者工具 | `E:\Develop\wxDevelop\微信web开发者工具`，缓存已 junction 到 E |
 | 本地 Maven 问题 | `mvnw.cmd` 首次下载 Maven 3.10.0 卡住；本机用上面的本地 Maven 构建 |
 
@@ -113,40 +117,31 @@ curl http://127.0.0.1:8080/api/health
 mysql --defaults-extra-file="E:\Develop\MySQL\.secrets\client-root.cnf" -D wordapp -e "SELECT wordbook_id, COUNT(*) FROM word GROUP BY wordbook_id;"
 ```
 
-## 7. GitHub 待办（PAT 方式）
+## 7. GitHub 当前状态
 
-1. 打开 <https://github.com/settings/tokens/new>（Classic）。
-2. Note：`WordRecall local gh`；Expiration：30 days。
-3. Scopes：`repo`、`workflow`、`read:org`。
-4. 生成后保存到 `E:\Develop\_downloads\gh-token.txt`，**不要发到聊天**。
-5. 执行：
-
-```powershell
-& "E:\Develop\gh\bin\gh.exe" auth login --with-token < "E:\Develop\_downloads\gh-token.txt"
-Remove-Item "E:\Develop\_downloads\gh-token.txt" -Force
-& "E:\Develop\gh\bin\gh.exe" auth setup-git
-& "E:\Develop\gh\bin\gh.exe" auth status
+```text
+仓库:            https://github.com/Sunflowers6666/WordRecall
+可见性:          public
+默认分支:        main
+阶段 1 Issue:    #1 CLOSED
+阶段 1 PR:       #2 MERGED → develop
+CI:              backend-test run 39394653123 SUCCESS（30s）
+Secret scanning: enabled
+Push protection: enabled
+Dependabot:      disabled（可选，启用前需用户确认）
 ```
 
-6. 创建仓库并推送：
+`gh auth status` 应显示已登录 `Sunflowers6666`。PAT 已导入后删除本地 token 文件，凭据在 Windows Credential Manager；新窗口通常不需要重新登录。
 
-```powershell
-& "E:\Develop\gh\bin\gh.exe" repo create Sunflowers6666/WordRecall --public --description "WordRecall - review words by first-learned date"
-cd E:\Develop\Projects\WordRecall
-git push -u origin main
-git push -u origin develop
-git push -u origin feature/stage-1-backend
-```
+如凭据丢失或 `gh auth status` 显示未登录：重新创建一个 Classic PAT（`repo`、`workflow`、`read:org`），保存到 `E:\Develop\_downloads\gh-token.txt`，执行 `gh auth login --with-token < "E:\Develop\_downloads\gh-token.txt"`，然后立即删除文件。**不要把 PAT 发到聊天。**
 
-7. 创建阶段 1 Issue 和 feature → develop 的 PR；PR 会触发 `backend-test.yml`。
-8. 在 GitHub Settings → Code security 检查 Secret scanning / Push protection。
+## 8. 下一步（阶段 2）
 
-## 8. 下一步
-
-1. 完成 GitHub 推送、Issue/PR、CI 绿色。
-2. 用户提供 AppID，并在本地 `backend/application-secret.yml` 填入真实 AppSecret；从微信开发者工具取 code，验证真实 `code2Session`。
-3. 阶段 2：先给小程序 UI 规范（配色、字号、间距、圆角、按钮/空/加载/错误状态），确认后写页面。
-4. 阶段 1 末尾的云服务器采购清单已在对话中给出；采购、备案、微信后台操作由用户完成。
+1. 用户提供 AppID（可发聊天）；AppSecret 只在本地 `backend/application-secret.yml` 填写，不发聊天。
+2. 用微信开发者工具取一个临时 code，验证真实 `code2Session` 与登录接口。
+3. 阶段 2 先给小程序 UI 规范（配色、字号、间距、圆角、按钮/空/加载/错误状态），确认后写页面。
+4. 云服务器采购清单已在对话中给出；采购、备案、微信后台操作由用户完成。
+5. 阶段 2 不做用户自建词库/文件导入（阶段 4/5，入口默认关闭）。
 
 ## 9. 新窗口启动提示（直接复制）
 
