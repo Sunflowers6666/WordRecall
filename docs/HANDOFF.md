@@ -1,6 +1,6 @@
 # WordRecall 交接文档
 
-> 更新时间：2026-10-20 16:40（Asia/Shanghai）
+> 更新时间：2026-10-20 17:05（Asia/Shanghai）
 > 新窗口请先读本文件，再读 `README.md` 和 `git log`。本文件不包含任何密码、PAT、AppSecret、JWT 密钥。
 
 ## 1. 项目基本信息
@@ -12,7 +12,7 @@
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
 | GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
-| 当前阶段 | **阶段 1 已完成并合并到 develop**；阶段 2 待开始 |
+| 当前阶段 | **阶段 1 已完成并合并到 develop**；阶段 2 UI 规范已出，待确认后写页面 |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -50,7 +50,7 @@ users = 0
 
 - 真实微信 `code2Session` 未执行（AppID/AppSecret 仍是 `CHANGE_ME`）
 - 云服务器未采购
-- 阶段 2 小程序页面未开始
+- 阶段 2 页面未开始（UI 规范已出：`docs/stage-2-ui-spec.md`，待用户确认；Issue #3）
 - Dependabot 未启用（可选，需用户确认）
 
 ## 3. Git 状态
@@ -138,11 +138,12 @@ Dependabot:      disabled（可选，启用前需用户确认）
 
 ## 8. 下一步（阶段 2）
 
-1. 用户提供 AppID（可发聊天）；AppSecret 只在本地 `backend/application-secret.yml` 填写，不发聊天。
-2. 用微信开发者工具取一个临时 code，验证真实 `code2Session` 与登录接口。
-3. 阶段 2 先给小程序 UI 规范（配色、字号、间距、圆角、按钮/空/加载/错误状态），确认后写页面。
-4. 云服务器采购清单已在对话中给出；采购、备案、微信后台操作由用户完成。
-5. 阶段 2 不做用户自建词库/文件导入（阶段 4/5，入口默认关闭）。
+1. 用户确认 `docs/stage-2-ui-spec.md` §11 的 6 个待确认项（主色、衬线字体、tabBar、导航栏、遮罩释义、每批 20 词）。
+2. 用户提供 AppID（可发聊天）；AppSecret 只在本地 `backend/application-secret.yml` 填写，不发聊天。
+3. 确认后按规范落地：先补 `docs/stage-2-ui-spec.md` §7 的后端接口（含单元测试），再写 6 个页面。
+4. 用微信开发者工具取一个临时 code，验证真实 `code2Session` 与登录接口。
+5. 云服务器采购清单已在对话中给出；采购、备案、微信后台操作由用户完成。
+6. 阶段 2 不做用户自建词库/文件导入（阶段 4/5，入口默认关闭）。
 
 ## 9. 新窗口启动提示（直接复制）
 
