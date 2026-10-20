@@ -12,7 +12,7 @@
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
 | GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
-| 当前阶段 | **阶段 5 文件导入已完成并合并**；下一步阶段 6（上线准备）/ 体验增强 |
+| 当前阶段 | **错词本已合并；英音按用户决定暂不做**；下一步上线体验版（需公网服务器 + 备案域名） |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -260,7 +260,7 @@ scripts\setup\windows\start-backend.cmd     :: 8080，真机用 172.20.242.224:8
 
 注意：其它环境（服务器/新机器）建库时需要执行 `migration-v4-wordbook-owner.sql`。
 
-## 13. 体验增强：错词本（进行中，分支 `feature/wrongbook`，Issue #11）
+## 13. 体验增强：错词本（已合并，PR #12 → develop，2026-10-20）
 
 - 语义：每个词以**最近一条** `learning_record` 的 `is_wrong` 为准，跨天汇总；之后答对就移出
 - 后端：`GET /api/wrongbook?offset=&limit=`、`POST /api/wrongbook/submit {rememberedWordIds}`
@@ -268,4 +268,35 @@ scripts\setup\windows\start-backend.cmd     :: 8080，真机用 172.20.242.224:8
 - 单测 74 → **78**；接口冒烟 9 项通过（造错词 → 列表 → 清除 → 列表减少）
 - 小程序：`pages/wrongbook`（列表 → 开始复习卡片流 → 记住的提交清除），「我的」页加错词本入口与数量
 - 页面逻辑冒烟 17 → **18**
-- 待做：真机验证 → PR → 关 Issue #11
+- 真机验证通过，Issue #11 已关闭
+
+## 14. 上线体验版准备（2026-10-20 起）
+
+### 硬性条件
+
+- 小程序请求必须走 **HTTPS + 已备案域名**（微信后台「request 合法域名」），体验版同样校验
+- 所以需要一个**公网可访问的后端**；选项：
+  1. 云服务器（轻量 2C2G 即可）跑 Java + MySQL，自己的备案域名 + 免费证书
+  2. 微信云托管（Docker 跑同一个 Spring Boot jar，自带 https 域名，免运维；需把 MySQL 数据迁到云托管数据库，按量计费）
+  3. 内网穿透 / 家里电脑：**不行**，域名必须备案且稳定
+
+### 发布流程
+
+1. 服务器装 JDK 17 + MySQL 8（或云数据库），导入 `schema.sql` + 词库 + 例句/音频数据
+2. 后端用 `SPRING_PROFILES_ACTIVE=prod`，全部环境变量（DB_URL/DB_USERNAME/DB_PASSWORD/JWT_SECRET/WX_MINIAPP_APPID/WX_MINIAPP_SECRET）
+3. Nginx 反代 + HTTPS 证书
+4. 微信公众平台：开发管理 → 开发设置 → 服务器域名 → request 合法域名填 `https://域名`
+5. `miniprogram/config/index.js` 的 `trial`/`release` 改成正式域名
+6. 公众平台生成**新的上传密钥**（之前已重置）→ 本地 `miniprogram-ci` 上传或 GitHub Secret `PRIVATE_KEY`
+7. 上传后在公众平台「版本管理」设为体验版，添加体验成员
+
+### 订阅消息（模板 ID 已提供）
+
+- 模板 ID：`00bjTvBMr0QnrY7YhfBt6jJYpPeXAdNO8SgbgE_4Wlk`（用户 2026-10-20 提供）
+- 限制：个人主体一般只有**一次性订阅**（用户点一次授权只能发一条）；长期订阅需要特定类目 + 企业主体
+- 结论：先不做「每日自动提醒」；如要做，只能是用户每次手动授权后发一条
+
+### 暂缓项
+
+- 英式发音：用户决定暂不加（代码/接口已预留 `accent=uk`）
+- 每日提醒：受一次性订阅限制，暂缓
