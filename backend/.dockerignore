@@ -1,0 +1,7 @@
+# 构建上下文只保留 jar 与音频，避免把源码、日志、生成数据传上去
+*
+!target/wordrecall-backend-0.0.1-SNAPSHOT.jar
+!data/audio/**
+
+# 生成数据（例句 jsonl 等）不需要进镜像
+data/examples
