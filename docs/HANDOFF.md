@@ -33,6 +33,7 @@
 - GitHub 仓库已创建并推送 `main`、`develop`、`feature/stage-1-backend`
 - 阶段 1 Issue **#1** 已关闭；PR **#2** 已合并到 `develop`
 - GitHub Actions `backend-test` 在 PR #2 上通过（30s）
+- `main` 已同步阶段 1 代码（默认分支不再只有阶段 0）
 - Secret scanning 与 Push protection 均为 enabled
 
 ### 实测数据
@@ -55,7 +56,7 @@ users = 0
 ## 3. Git 状态
 
 ```text
-main:                       e9b79cb chore: 记录微信开发者工具缓存迁移
+main:                       阶段 1 完成，与 develop 同步（v1.0.0 时打 tag）
 develop:                    9dadeb2 Merge pull request #2 + docs: 更新阶段 1 完成状态
 feature/stage-1-backend:    3c629c3 docs: 添加跨会话交接文档（已合并）
 工作区:                     clean
