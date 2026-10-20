@@ -24,6 +24,19 @@ Component({
   },
 
   lifetimes: {
+    attached() {
+      if (!config.offline) {
+        return
+      }
+      // 插件没在小程序后台添加时 requirePlugin 会抛错，此时直接隐藏发音按钮
+      try {
+        requirePlugin(TTS_PROVIDER)
+        this.setData({ canPlay: true })
+      } catch (error) {
+        this.setData({ canPlay: false })
+      }
+    },
+
     detached() {
       if (this.audio) {
         this.audio.destroy()
