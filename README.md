@@ -135,6 +135,8 @@ node scripts\logic-test.js    :: 页面逻辑冒烟
 | GET | `/api/words/{id}/audio?accent=us` | 单词发音（离线预生成的 mp3，公开访问、缓存 7 天） |
 | POST | `/api/imports/preview` | multipart 上传词表（csv/xlsx），返回解析统计与预览 |
 | POST | `/api/imports?bookId=` 或 `?newBookName=` | 导入到已有/新建词库 |
+| GET | `/api/wrongbook` | 错词本：每个词以最近一条记录判断是否仍为错 |
+| POST | `/api/wrongbook/submit` | 提交「记住了」的词，从错词本移除 |
 | GET | `/api/review?date=` | 某天首次学过的单词 |
 | POST | `/api/review/submit` | 提交某天错词，回写 `is_wrong` |
 
