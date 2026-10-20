@@ -56,7 +56,7 @@ users = 0
 
 ```text
 main:                       e9b79cb chore: 记录微信开发者工具缓存迁移
-develop:                    9dadeb2 Merge pull request #2 from .../feature/stage-1-backend
+develop:                    9dadeb2 Merge pull request #2 + docs: 更新阶段 1 完成状态
 feature/stage-1-backend:    3c629c3 docs: 添加跨会话交接文档（已合并）
 工作区:                     clean
 远程:                       origin https://github.com/Sunflowers6666/WordRecall.git
@@ -125,7 +125,7 @@ mysql --defaults-extra-file="E:\Develop\MySQL\.secrets\client-root.cnf" -D worda
 默认分支:        main
 阶段 1 Issue:    #1 CLOSED
 阶段 1 PR:       #2 MERGED → develop
-CI:              backend-test run 39394653123 SUCCESS（30s）
+CI:              PR run 39394653123 SUCCESS（30s）；develop push run 39394993025 SUCCESS（17s）
 Secret scanning: enabled
 Push protection: enabled
 Dependabot:      disabled（可选，启用前需用户确认）
