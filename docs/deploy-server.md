@@ -63,7 +63,14 @@ curl -s http://127.0.0.1:8080/api/health
 
 1. 腾讯云 DNS → 域名解析 → 添加 `A` 记录 `api`（或 `@`）指向公网 IP
 2. 等解析生效（`ping api.你的域名.com` 能看到 IP）
-3. 服务器上：
+3. 先把 Nginx 配置里的 `server_name _;` 改成你的域名（否则 certbot 可能匹配不到）：
+
+```bash
+sed -i 's/server_name _;/server_name api.你的域名.com;/' /etc/nginx/sites-available/wordrecall
+nginx -t && systemctl reload nginx
+```
+
+4. 申请证书并自动改 HTTPS：
 
 ```bash
 certbot --nginx -d api.你的域名.com

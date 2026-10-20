@@ -21,8 +21,12 @@ chown -R wordrecall:wordrecall "$APP_DIR"
 
 echo "==> 3/7 MySQL：建库、建应用账号（只读写，不给 DDL）"
 if [ -z "${DB_PASSWORD:-}" ]; then
-  read -r -s -p "给数据库账号 wordapp 设置密码（不会回显）: " DB_PASSWORD
+  read -r -s -p "给数据库账号 wordapp 设置密码（12 位以上，仅字母数字）: " DB_PASSWORD
   echo
+fi
+if ! [[ "${DB_PASSWORD}" =~ ^[A-Za-z0-9]{12,}$ ]]; then
+  echo "错误：密码只能包含字母和数字，且至少 12 位（避免 SQL/配置转义问题）" >&2
+  exit 1
 fi
 mysql <<SQL
 CREATE DATABASE IF NOT EXISTS ${DB_NAME} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
