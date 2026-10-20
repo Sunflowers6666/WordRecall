@@ -58,8 +58,9 @@ miniprogram/miniprogram_npm/
 llm-secret.yml
 **/llm-secret.yml
 
-# ---- Generated data (examples, audio cache) ----
-backend/data/
+# ---- Generated data ----
+# 例句 jsonl 不入库；发音 mp3 需要随仓库一起构建镜像（云托管从 GitHub 构建）
+backend/data/examples/
 
 # ---- Local Aliyun TTS config ----
 tts-secret.yml
