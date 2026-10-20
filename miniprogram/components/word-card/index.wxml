@@ -1,0 +1,23 @@
+<view class="word-card {{wrong ? 'word-card-wrong' : ''}}">
+  <view wx:if="{{wrong}}" class="wrong-badge">错</view>
+
+  <view class="spelling">{{word.spelling}}</view>
+  <view wx:if="{{word.phonetic}}" class="phonetic">{{word.phonetic}}</view>
+
+  <view class="card-divider"></view>
+
+  <view wx:if="{{showReveal && !revealed}}" class="reveal-box" bindtap="onReveal">
+    点击查看释义
+  </view>
+  <block wx:else>
+    <view class="meaning">{{word.meaning}}</view>
+    <view class="example">
+      <block wx:if="{{word.exampleSentence}}">
+        <view class="example-label">例句</view>
+        <view class="example-en">{{word.exampleSentence}}</view>
+        <view wx:if="{{word.exampleTranslation}}" class="example-cn">{{word.exampleTranslation}}</view>
+      </block>
+      <view wx:else class="example-empty">暂无例句</view>
+    </view>
+  </block>
+</view>

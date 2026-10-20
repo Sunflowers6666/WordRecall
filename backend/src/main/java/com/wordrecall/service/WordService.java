@@ -6,6 +6,7 @@ import com.wordrecall.mapper.WordMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -22,6 +23,13 @@ public class WordService {
     public long count(Wrapper<Word> wrapper) {
         Long count = wordMapper.selectCount(wrapper);
         return count == null ? 0 : count;
+    }
+
+    public List<Word> findByIds(Collection<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return wordMapper.selectBatchIds(ids);
     }
 
     /**

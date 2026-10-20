@@ -1,6 +1,8 @@
 package com.wordrecall.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.wordrecall.common.BizException;
+import com.wordrecall.common.ErrorCode;
 import com.wordrecall.domain.User;
 import com.wordrecall.domain.Wordbook;
 import com.wordrecall.mapper.UserMapper;
@@ -45,5 +47,38 @@ public class UserService {
             }
             return created;
         }
+    }
+
+    public User getById(Long userId) {
+        User user = userId == null ? null : userMapper.selectById(userId);
+        if (user == null) {
+            throw new BizException(ErrorCode.NOT_FOUND, "用户不存在");
+        }
+        return user;
+    }
+
+    /**
+     * Only the changed column is written, so {@code updated_at} still refreshes via the
+     * column's ON UPDATE CURRENT_TIMESTAMP.
+     */
+    public User updateNickname(Long userId, String nickname) {
+        User user = getById(userId);
+        userMapper.update(null, Wrappers.<User>lambdaUpdate()
+                .eq(User::getId, userId)
+                .set(User::getNickname, nickname));
+        user.setNickname(nickname);
+        return user;
+    }
+
+    public User updateCurrentWordbook(Long userId, Long wordbookId) {
+        User user = getById(userId);
+        if (wordbookService.findById(wordbookId) == null) {
+            throw new BizException(ErrorCode.NOT_FOUND, "词库不存在");
+        }
+        userMapper.update(null, Wrappers.<User>lambdaUpdate()
+                .eq(User::getId, userId)
+                .set(User::getCurrentWordbookId, wordbookId));
+        user.setCurrentWordbookId(wordbookId);
+        return user;
     }
 }

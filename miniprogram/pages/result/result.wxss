@@ -1,0 +1,71 @@
+.result-body {
+  padding-top: 64rpx;
+}
+
+.result-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-number {
+  font-size: 88rpx;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.result-number.is-ok {
+  color: var(--c-brand);
+}
+
+.result-number.is-warn {
+  color: var(--c-accent);
+}
+
+.result-label {
+  font-size: 32rpx;
+  color: var(--c-text-2);
+}
+
+.result-sub {
+  margin-top: 8rpx;
+}
+
+.wrong-list {
+  margin-top: 48rpx;
+}
+
+.wrong-title {
+  margin-bottom: 8rpx;
+}
+
+.wrong-row {
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--c-line);
+}
+
+.wrong-row:last-child {
+  border-bottom: none;
+}
+
+.wrong-word {
+  font-family: Georgia, "Times New Roman", "Songti SC", serif;
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.wrong-meaning {
+  margin-top: 4rpx;
+  font-size: 28rpx;
+  color: var(--c-text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-actions {
+  margin-top: 64rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}

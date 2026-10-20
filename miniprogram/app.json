@@ -1,0 +1,40 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/learn/learn",
+    "pages/review/review",
+    "pages/result/result",
+    "pages/profile/profile",
+    "pages/wordbook/wordbook"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#F6F7F5",
+    "navigationBarTitleText": "单词日历",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F6F7F5"
+  },
+  "tabBar": {
+    "color": "#6E7783",
+    "selectedColor": "#2C6E5B",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "日历"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "usingComponents": {
+    "state-view": "/components/state-view/index",
+    "word-card": "/components/word-card/index"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,17 @@
+<view class="state-view">
+  <block wx:if="{{loading}}">
+    <view class="skeleton">
+      <view class="sk-line sk-line-1"></view>
+      <view class="sk-line sk-line-2"></view>
+      <view class="sk-line sk-line-3"></view>
+    </view>
+  </block>
+  <block wx:else>
+    <view class="state-icon">
+      <icon type="{{iconType}}" size="24" color="#6E7783"></icon>
+    </view>
+    <view class="state-title">{{resolvedTitle}}</view>
+    <view wx:if="{{resolvedDesc}}" class="state-desc">{{resolvedDesc}}</view>
+    <view wx:if="{{resolvedAction}}" class="btn btn-secondary state-action" bindtap="onAction">{{resolvedAction}}</view>
+  </block>
+</view>

@@ -1,0 +1,62 @@
+<view class="page page-body-with-bar">
+  <block wx:if="{{state === 'loading'}}">
+    <state-view state="loading"></state-view>
+  </block>
+
+  <block wx:elif="{{state === 'error'}}">
+    <state-view state="error" kind="{{errorKind}}" bind:action="onRetry"></state-view>
+  </block>
+
+  <block wx:else>
+    <view class="month-row">
+      <view class="month-nav">
+        <view class="arrow" bindtap="onPrevMonth">‹</view>
+        <view class="month-title t-num">{{monthTitle}}</view>
+        <view class="arrow" bindtap="onNextMonth">›</view>
+      </view>
+      <view wx:if="{{!isCurrentMonth}}" class="today-btn" bindtap="onToday">今天</view>
+    </view>
+
+    <view class="calendar card">
+      <view class="week-row">
+        <view class="week-cell" wx:for="{{weekdays}}" wx:key="*this">{{item}}</view>
+      </view>
+      <view class="days-grid">
+        <view
+          wx:for="{{cells}}"
+          wx:key="key"
+          class="day-cell {{item.inMonth ? '' : 'day-pad'}} {{item.isSelected ? 'day-selected' : ''}} {{item.isFuture ? 'day-future' : ''}} {{item.isToday && !item.isSelected ? 'day-today' : ''}}"
+          bindtap="onDayTap"
+          data-index="{{index}}"
+        >
+          <view class="day-num">{{item.day}}</view>
+          <view wx:if="{{item.learned}}" class="day-dot {{item.isSelected ? 'day-dot-on' : ''}}"></view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{daySummary}}" class="card summary">
+      <view class="summary-date">{{daySummary.label}}</view>
+      <view class="summary-meta t-num">学了 {{daySummary.wordCount}} 个单词<text wx:if="{{daySummary.wrongCount > 0}}"> · 错 {{daySummary.wrongCount}} 个</text></view>
+      <view class="btn btn-secondary summary-btn" bindtap="onReviewDay">复习这天的单词</view>
+    </view>
+
+    <view wx:elif="{{monthEmpty}}" class="card summary summary-empty">
+      <view class="summary-date">这个月还没开始学习</view>
+      <view class="t-caption">点「开始学习」添加第一批单词</view>
+    </view>
+
+    <view wx:else class="card summary summary-empty">
+      <view class="summary-date">这天没有学习记录</view>
+      <view class="t-caption">选一个带绿点的日期，或开始今天的学习</view>
+    </view>
+  </block>
+
+  <view class="bottom-bar">
+    <view class="wb-chip" bindtap="onWordbook">
+      <text>{{wordbookName || '词库'}}</text>
+      <text class="caret">›</text>
+    </view>
+    <view class="btn btn-primary start-btn" bindtap="onStart">开始学习</view>
+  </view>
+</view>
