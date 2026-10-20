@@ -87,6 +87,8 @@ learning_record = 0（测试数据已清理；真实登录验证时曾写入 40 
 backend_tests = 41 passed
 miniprogram_checks = check.py OK（JSON/JS/WXML 静态检查）
 miniprogram_logic = 11 passed
+audio_us = 14296 个 mp3（138.4 MB，生成 565 秒，0 失败）
+examples = 生成中（DeepSeek，完成前只有试跑的 20 条已入库）
 ```
 
 ### 未完成 / 待用户操作
