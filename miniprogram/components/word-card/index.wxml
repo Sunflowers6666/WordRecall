@@ -4,7 +4,7 @@
   <view class="spelling">{{word.spelling}}</view>
   <view wx:if="{{word.phonetic}}" class="phonetic">{{word.phonetic}}</view>
 
-  <view wx:if="{{word.id}}" class="audio-row">
+  <view wx:if="{{word.id && canPlay}}" class="audio-row">
     <view class="audio-btn {{playing ? 'audio-btn-on' : ''}}" bindtap="onPlay">🔊 美</view>
   </view>
 

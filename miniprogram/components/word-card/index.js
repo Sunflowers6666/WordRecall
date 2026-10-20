@@ -16,7 +16,9 @@ Component({
   },
 
   data: {
-    playing: false
+    playing: false,
+    /** 单机版没有音频资源 */
+    canPlay: !config.offline
   },
 
   lifetimes: {

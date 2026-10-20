@@ -1,4 +1,5 @@
 const config = require('../config/index')
+const offlineApi = require('./offline-api')
 
 const TOKEN_KEY = 'wr_token'
 
@@ -73,6 +74,10 @@ function handleResponse(response) {
  * @returns {Promise<any>} 解析为 ApiResponse.data
  */
 function request(options) {
+  if (config.offline) {
+    // 单机版：全部走本地实现，不发网络请求
+    return Promise.resolve().then(() => offlineApi.request(options.url, options.method, options.data))
+  }
   return send(options).then((response) => {
     if (response.statusCode === 401 && options.auth !== false && !options.retried && reLoginHandler) {
       return reLoginHandler().then(() => request(Object.assign({}, options, { retried: true })))

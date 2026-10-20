@@ -1,6 +1,7 @@
 const { request } = require('../../utils/request')
 const { ensureLogin, getUser, saveUser } = require('../../utils/auth')
 const { toastError } = require('../../utils/feedback')
+const config = require('../../config/index')
 
 const BATCH_OPTIONS = [10, 20, 30]
 
@@ -11,6 +12,7 @@ Page({
     wordbookName: '',
     version: '1.0.0',
     stats: null,
+    offline: config.offline,
     batchSize: 20,
     wrongCount: 0
   },

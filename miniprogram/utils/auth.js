@@ -1,4 +1,5 @@
 const { request, setReLoginHandler } = require('./request')
+const config = require('../config/index')
 
 const TOKEN_KEY = 'wr_token'
 const USER_KEY = 'wr_user'
@@ -68,6 +69,12 @@ let loginPromise = null
 
 /** wx.login → 后端换 token。并发调用共用同一次登录。 */
 function login() {
+  if (config.offline) {
+    // 单机版：不需要微信登录与后端，直接生成本机用户
+    const user = { id: 0, nickname: '本机', avatarUrl: null, currentWordbookId: 1, batchSize: 20 }
+    saveSession('offline', user)
+    return Promise.resolve(user)
+  }
   if (loginPromise) {
     return loginPromise
   }

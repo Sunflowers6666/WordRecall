@@ -300,3 +300,13 @@ scripts\setup\windows\start-backend.cmd     :: 8080，真机用 172.20.242.224:8
 
 - 英式发音：用户决定暂不加（代码/接口已预留 `accent=uk`）
 - 每日提醒：受一次性订阅限制，暂缓
+
+## 15. 单机版（2026-10-20）
+
+- `miniprogram/config/index.js` 的 `offline: true`：不发网络请求，页面代码不改
+- 数据：`scripts/offline/generate_words.py` 从 MySQL 导出三个词库 → gzip+base64 → `miniprogram/data/wb{1,2,3}.js`（1.5MB）
+- 解压：`utils/vendor/pako.min.js`（MIT）；本地 API：`utils/offline-api.js`（对齐后端接口语义）
+- 记录模型：`records[wordId] = { first, wrong }`，存 `wr_offline_v1`
+- 关闭：自建词库、导入、发音；保留：日历/学习/复习/结果/统计/错词本/每批词数/清空本机记录
+- 包体 1.64MB；逻辑冒烟 19 项（含单机版全流程）
+- 状态：代码完成，待开发者工具与真机验证；确认后可上传体验版（无需域名）

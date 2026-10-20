@@ -142,6 +142,19 @@ node scripts\logic-test.js    :: 页面逻辑冒烟
 
 详细契约（请求/响应/错误码）见 `docs/stage-2-ui-spec.md` §7。
 
+## 单机版（无后端）
+
+`miniprogram/config/index.js` 里的 `offline: true` 会让小程序**不发任何网络请求**：
+
+- 三个预置词库压缩后随包内置（`scripts/offline/generate_words.py` 生成，约 1.5MB）
+- 学习记录、错词本、统计全部存本机（`wx.setStorageSync`）
+- 自建词库与导入入口自动隐藏；发音按钮隐藏（音频 138MB 无法随包）
+- 包体约 1.64MB（主包上限 2MB）
+
+适合：不想买服务器/域名、先给朋友用的体验版。数据只在本机，换机或清缓存会丢。
+
+改回 `offline: false` 即恢复走后端（页面代码不用动）。
+
 ## 小程序端配置
 
 - AppID `wx1a3282cb951d51b8` 已写入 `miniprogram/project.config.json`。

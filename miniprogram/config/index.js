@@ -29,6 +29,11 @@ const env = envVersion()
 
 module.exports = {
   env,
+  /**
+   * 单机版开关：true 时不发任何网络请求，词库随包内置、记录存本机。
+   * 在线版改成 false 即恢复走后端（页面代码不用动）。
+   */
+  offline: true,
   baseUrl: BASE_URL[env] || BASE_URL.develop,
   /** 每批新学词数默认值（服务端按 user.batch_size 返回，这里只作兜底展示） */
   batchSize: 20,

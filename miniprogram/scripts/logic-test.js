@@ -33,6 +33,9 @@ async function checkAsync(name, fn) {
 const storage = {}
 const calls = { navigateTo: [], redirectTo: [], switchTab: [], toast: [], requests: [], uploads: [] }
 
+// 页面按「在线版」跑冒烟；单机版逻辑在文件末尾单独测
+require('../config/index').offline = false
+
 let todayIso = new Date().getFullYear() + '-' +
   String(new Date().getMonth() + 1).padStart(2, '0') + '-' +
   String(new Date().getDate()).padStart(2, '0')
@@ -105,6 +108,7 @@ global.wx = {
   getStorageSync: (key) => storage[key],
   setStorageSync: (key, value) => { storage[key] = value },
   removeStorageSync: (key) => { delete storage[key] },
+  base64ToArrayBuffer: (value) => Uint8Array.from(Buffer.from(value, 'base64')).buffer,
   showToast: (opts) => calls.toast.push(opts),
   showModal: () => {},
   showActionSheet: () => {},
@@ -447,6 +451,55 @@ const dateUtil = require('../utils/date')
     assert.strictEqual(submits.length, 1)
     assert.deepStrictEqual(submits[0].body.rememberedWordIds, [1])
     assert.strictEqual(wrongbookPage.data.mode, 'list')
+  })
+
+  // ---- 单机版：本地 API 全流程 ----
+  const offlineApi = require('../utils/offline-api')
+  const offlineStore = require('../utils/offline-store')
+
+  await checkAsync('单机版：学习 → 统计 → 复习 → 错词本全走本地', async () => {
+    offlineStore.reset()
+    const books = offlineApi.request('/api/wordbooks', 'GET')
+    assert.strictEqual(books.length, 3)
+    assert.strictEqual(books[0].selected, true)
+
+    const session = offlineApi.request('/api/study/sessions', 'POST', { size: 5 })
+    assert.strictEqual(session.words.length, 5)
+    assert.ok(session.words[0].spelling)
+    assert.strictEqual(session.words[0].exampleSentence !== undefined, true)
+
+    offlineApi.request('/api/study/records', 'POST', {
+      wordIds: session.words.map((word) => word.id)
+    })
+    const stats = offlineApi.request('/api/users/me/stats', 'GET')
+    assert.strictEqual(stats.todayWords, 5)
+    assert.strictEqual(stats.learnedWords, 5)
+    assert.strictEqual(stats.learnedDays, 1)
+
+    const calendar = offlineApi.request('/api/calendar?year=' + todayIso.slice(0, 4) +
+      '&month=' + Number(todayIso.slice(5, 7)), 'GET')
+    assert.strictEqual(calendar.summary.words, 5)
+
+    const review = offlineApi.request('/api/review?date=' + todayIso, 'GET')
+    assert.strictEqual(review.words.length, 5)
+
+    offlineApi.request('/api/review/submit', 'POST', {
+      date: todayIso,
+      wrongWordIds: [review.words[0].id]
+    })
+    const wrong = offlineApi.request('/api/wrongbook', 'GET')
+    assert.strictEqual(wrong.total, 1)
+
+    const cleared = offlineApi.request('/api/wrongbook/submit', 'POST', {
+      rememberedWordIds: [review.words[0].id]
+    })
+    assert.strictEqual(cleared, 1)
+    assert.strictEqual(offlineApi.request('/api/wrongbook', 'GET').total, 0)
+
+    // 已学过的词不会再次出现在新学批次里
+    const next = offlineApi.request('/api/study/sessions', 'POST', { size: 5 })
+    assert.strictEqual(next.words.length, 5)
+    assert.ok(next.words[0].id !== review.words[0].id)
   })
 
   console.log('')

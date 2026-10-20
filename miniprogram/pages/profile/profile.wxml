@@ -45,6 +45,11 @@
         <view class="list-row-arrow">›</view>
       </view>
 
+      <view wx:if="{{offline}}" class="list-row" bindtap="onResetData">
+        <view class="list-row-main">清空本机记录</view>
+        <view class="list-row-arrow">›</view>
+      </view>
+
       <view class="list-row" bindtap="onWordbook">
         <view class="list-row-main">当前词库</view>
         <view class="list-row-value">{{wordbookName || '未选择'}}</view>
