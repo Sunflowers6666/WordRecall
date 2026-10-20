@@ -1,0 +1,32 @@
+name: miniprogram-check
+
+on:
+  pull_request:
+    branches: [develop]
+  push:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: miniprogram
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Static checks (JSON / JS / WXML)
+        run: python3 scripts/check.py
+
+      - name: Page logic smoke
+        run: node scripts/logic-test.js
