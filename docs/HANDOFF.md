@@ -1,6 +1,6 @@
 # WordRecall 交接文档
 
-> 更新时间：2026-10-20 17:12（Asia/Shanghai）
+> 更新时间：2026-10-20 17:45（Asia/Shanghai）
 > 新窗口请先读本文件，再读 `README.md` 和 `git log`。本文件不包含任何密码、PAT、AppSecret、JWT 密钥。
 
 ## 1. 项目基本信息
@@ -12,7 +12,7 @@
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
 | GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
-| 当前阶段 | **阶段 2 进行中**：UI 规范已确认，7 个接口完成并通过冒烟；6 个页面待写 |
+| 当前阶段 | **阶段 2 功能已完成**：规范、7 个接口、6 个页面 + 2 个组件；待开发者工具/真机联调 |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -46,6 +46,18 @@
 - 修复：`?date=not-a-date` 这类参数格式错误原先返回 500，`GlobalExceptionHandler` 现在返回 400；同时补 405/415 处理
 - 冒烟用测试用户与学习记录已清理（`users=0`、`learning_record=0`）
 
+### 阶段 2 小程序端（同分支）
+
+- AppID `wx1a3282cb951d51b8` 已写入 `miniprogram/project.config.json`；`backend/application-secret.yml` 的 `WX_MINIAPP_APPID` 也已填（AppSecret 仍是 `CHANGE_ME`）
+- 6 个页面：日历首页（tab）、新学、复习、复习结果、我的（tab）、选择词库
+- 2 个组件：`word-card`（学习/复习共用，支持遮罩释义）、`state-view`（加载/空/错误三态）
+- `utils/request.js`：统一 Bearer、15s 超时、错误分 network/auth/server/biz、401 静默重登并重放一次
+- `utils/auth.js`：`ensureLogin()`（并发共用一次 wx.login）；首页与词库可匿名浏览
+- 设计令牌全部落在 `app.wxss` 的 CSS 变量，页面不写死颜色/字号
+- 自检：`python miniprogram/scripts/check.py` 通过（11 JSON / 15 JS / 8 WXML：JSON 解析、node 语法、WXML 标签配对、页面四件套、组件路径、tabBar 引用）
+- 页面逻辑冒烟：`node miniprogram/scripts/logic-test.js` **11 项通过**（月历网格、今天/未来标记、月份切换与未来月拦截、新学翻页、复习只回传错词、结果页数据、词库切换）
+- 未验证：微信开发者工具真实渲染、真机 iOS/Android、真实 `code2Session`
+
 ### 实测数据
 
 ```text
@@ -56,13 +68,15 @@ IELTS = 5040
 users = 0
 learning_record = 0（冒烟测试数据已清理）
 backend_tests = 27 passed
+miniprogram_checks = check.py OK（11 JSON / 15 JS / 8 WXML）
+miniprogram_logic = 11 passed
 ```
 
 ### 未完成 / 待用户操作
 
-- 真实微信 `code2Session` 未执行（AppID/AppSecret 仍是 `CHANGE_ME`，需要你提供 AppID）
+- **真实微信 `code2Session` 未执行**：AppID 已填，AppSecret 仍是 `CHANGE_ME`，需要你在微信公众平台生成后填到本地 `backend/application-secret.yml`
+- 小程序未在微信开发者工具/真机里跑过（静态检查与逻辑冒烟已过，渲染与真机行为待验证）
 - 云服务器未采购
-- 阶段 2 的 6 个小程序页面未写（规范已确定，见 `docs/stage-2-ui-spec.md`；Issue #3）
 - Dependabot 未启用（可选，需用户确认）
 
 ## 3. Git 状态
@@ -70,14 +84,13 @@ backend_tests = 27 passed
 ```text
 main:                        阶段 1 完成，与 develop 同步（v1.0.0 时打 tag）
 develop:                     97a624c docs: 记录 main 同步阶段 1
-feature/stage-2-miniprogram: 阶段 2 UI 规范 + 7 个接口（当前分支，PR #4 draft）
+feature/stage-2-miniprogram: 阶段 2 规范 + 7 个接口 + 6 个页面（当前分支，PR #4 ready）
 feature/stage-1-backend:     已合并，保留
 工作区:                      clean
 远程:                        origin https://github.com/Sunflowers6666/WordRecall.git
 已推送:                      是（main / develop / feature/stage-2-miniprogram）
 Issue:                       #1 CLOSED；#3 OPEN（阶段 2）
-PR:                          #2 MERGED；#4 OPEN（阶段 2，draft）
-CI:                          PR #4 首个提交 run 39396241530 SUCCESS（backend-test）
+PR:                          #2 MERGED；#4 OPEN（阶段 2，ready for review，CI 见 PR 页面）
 ```
 
 分支策略：`main` 稳定、`develop` 集成、`feature/*` 功能分支；阶段 1 已 PR 到 `develop`。`main` 按计划在阶段 6 统一更新。
@@ -106,6 +119,9 @@ CI:                          PR #4 首个提交 run 39396241530 SUCCESS（backen
 - WxJava 实际 artifact 是 `wx-java-miniapp-spring-boot-starter:4.8.0`；用户最初写的 `weixin-java-...` 在 Maven Central 不存在
 - JWT HS256，有效期 7 天，不做 refresh token
 - 首次登录默认词库 CET-4
+- 阶段 2 视觉：主色深青绿 `#2C6E5B`、单词用衬线字体、tabBar 纯文字两 tab、全部页面用系统导航栏（不做自定义导航）
+- 每批新学 20 词（`miniprogram/config/index.js` 的 `batchSize`），阶段 2 不开放设置
+- 日期基准：后端用 `LocalDate.now(ZoneId.of("Asia/Shanghai"))` 生成学习日期；客户端按设备本地日期展示
 - 词库来源 **ECDICT（MIT）**；ECDICT 没有例句，`example_sentence` / `example_translation` 为 `null`，UI 显示“暂无例句”
 - 1.0 默认隐藏自建词库和文件导入入口（阶段 4/5 用配置开关，默认 false）
 - 阶段 1 不实现新学/复习 API；阶段 2/3 再做
@@ -149,13 +165,14 @@ Dependabot:      disabled（可选，启用前需用户确认）
 
 如凭据丢失或 `gh auth status` 显示未登录：重新创建一个 Classic PAT（`repo`、`workflow`、`read:org`），保存到 `E:\Develop\_downloads\gh-token.txt`，执行 `gh auth login --with-token < "E:\Develop\_downloads\gh-token.txt"`，然后立即删除文件。**不要把 PAT 发到聊天。**
 
-## 8. 下一步（阶段 2）
+## 8. 下一步（阶段 2 收尾）
 
-1. 写 6 个小程序页面（按已确认的 `docs/stage-2-ui-spec.md`）：工程骨架 → `utils/request.js` + 登录 → 日历首页 → 新学 → 复习 → 结果 → 我的 → 词库列表；在微信开发者工具里用 mock 登录跑通。
-2. 用户提供 AppID（可发聊天）后写入 `miniprogram/project.config.json`；AppSecret 只在本地 `backend/application-secret.yml` 填写，不发聊天。
-3. 用微信开发者工具取一个临时 code，验证真实 `code2Session` 与登录接口。
-4. 云服务器采购清单已在对话中给出；采购、备案、微信后台操作由用户完成。
-5. 阶段 2 不做用户自建词库/文件导入（阶段 4/5，入口默认关闭）。
+1. 微信开发者工具导入 `miniprogram/`，起本地后端，走一遍：日历 → 开始学习 → 复习 → 结果 → 切换词库 → 改昵称。
+2. 在微信公众平台生成 AppSecret，填到本地 `backend/application-secret.yml` 的 `WX_MINIAPP_SECRET`（不要发聊天）。
+3. 验证真实 `code2Session`：开发者工具里点「开始学习」会走真实 `wx.login`（需要 AppSecret 已填）。
+4. 真机调试：把 `miniprogram/config/index.js` 的 develop 地址改成电脑局域网 IP，手机与电脑同一网络。
+5. 云服务器采购、备案、微信后台 request 合法域名配置由用户完成。
+6. 阶段 2 不做用户自建词库/文件导入（阶段 4/5，入口默认关闭）。
 
 ## 9. 新窗口启动提示（直接复制）
 

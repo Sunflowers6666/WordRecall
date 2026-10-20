@@ -1,7 +1,7 @@
 # 阶段 2 · 小程序 UI 规范与页面设计
 
 > 更新时间：2026-10-20 17:00（Asia/Shanghai）
-> 状态：**待确认**。确认后按本规范写页面（HANDOFF §8 第 3 条）。
+> 状态：**已实现**（6 个页面 + 7 个接口）。静态检查与页面逻辑冒烟通过，待微信开发者工具与真机联调。
 > 本文件不含任何密钥；文中所有数值单位除特别说明外均为 `rpx`（750 设计宽度）。
 
 ## 1. 目标与范围
@@ -216,7 +216,7 @@
 - 中部：学习卡片，默认遮罩模式（先想再看）。
 - 底部：次按钮「上一个」（第一词禁用）+ 主按钮「下一个」；最后一词主按钮文案改「学完了，去复习」。
 - 学完：卡片区换成完成态（「本批 20 词已学完」+ 主按钮「现在复习」+ 文字按钮「回到日历」），不跳新页面。
-- 中途返回：有进度时 `wx.showModal`「要退出吗」「已学的单词会保留」。已提交到后端的记录不回滚。
+- 中途返回：系统导航返回键无法拦截（1.0 用默认导航栏），且进入本页时批次已写入服务端，直接返回不会丢数据，因此不做「确定退出」弹窗。
 - 请求失败：卡片区换成错误态 + 「重试」；已加载的批次不丢。
 
 ### 5.4 复习 `pages/review/review`
@@ -237,7 +237,7 @@
 ### 5.6 我的 `pages/profile/profile`
 
 - 头部：头像 `120rpx` 圆形（无头像时 `--c-bg-subtle` 底 + 昵称首字）+ 昵称。
-- 行 1「昵称」→ 弹层输入（`input type="nickname"`），保存 `PATCH /api/users/me`。
+- 行 1「昵称」→ `wx.showModal({ editable: true })` 输入，保存 `PATCH /api/users/me`。1.0 不用 `input type="nickname"`（要多一个表单页，收益小）。
 - 行 2「当前词库 CET-4」→ 进词库列表。
 - 行 3「已学习 N 词 · N 天」（阶段 3 接口未就绪时整行不显示，不留空行）。
 - 行 4「关于」→ `wx.showModal` 版本号 + 词库来源 ECDICT（MIT）。
@@ -265,7 +265,8 @@ miniprogram/
 ├─ utils/auth.js       ensureLogin()、token 存取
 ├─ components/word-card/
 ├─ components/state-view/
-└─ pages/{index,learn,review,result,profile,wordbook}/
+├─ pages/{index,learn,review,result,profile,wordbook}/
+└─ scripts/            check.py（静态检查）、logic-test.js（页面逻辑冒烟）
 ```
 
 约束：
@@ -341,4 +342,11 @@ miniprogram/
 6. 新学卡片默认「遮罩释义、点击查看」，做成页面内开关，复习页不遮罩。
 7. 每批新学默认 20 词，阶段 2 固定，不开放设置。
 
-待用户提供：小程序 **AppID**（可发聊天）；AppSecret 只填本地 `backend/application-secret.yml`。
+待用户提供：小程序 **AppID**（已提供：`wx1a3282cb951d51b8`，已写入 `project.config.json`）；AppSecret 只填本地 `backend/application-secret.yml`。
+
+## 12. 实现与验证（2026-10-20）
+
+- 代码：`miniprogram/` 下 6 个页面 + 2 个组件 + `utils/`（request/auth/date/feedback）+ `config/`（index/feature）
+- 静态检查 `python miniprogram/scripts/check.py`：11 个 JSON、15 个 JS、8 个 WXML 全部通过（JSON 解析、`node --check` 语法、WXML 标签配对、页面四件套齐全、组件路径、tabBar 引用）
+- 逻辑冒烟 `node miniprogram/scripts/logic-test.js`：11 项通过（月历网格与今天/未来标记、月份切换与未来月拦截、点未来日期无效、新学翻页与完成态、复习只回传错词、结果页数据传递、词库切换选中态）
+- 未验证：微信开发者工具里的真实渲染、真机（iOS/Android）、真实 `code2Session`（需要 AppSecret 与临时 code）

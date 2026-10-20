@@ -4,7 +4,7 @@
 
 - 小程序名称：**单词日历**
 - 代码仓库：**WordRecall**
-- 当前阶段：阶段 2（小程序 UI 规范与后端接口已完成，6 个页面进行中）
+- 当前阶段：阶段 2（小程序 UI 规范、7 个业务接口、6 个页面已完成；待真机联调）
 
 ## 核心功能
 
@@ -35,7 +35,7 @@ E:\Develop\Projects\WordRecall\
 │  ├─ src\main\resources\db\schema.sql
 │  ├─ src\main\resources\dict\   CET-4/CET-6/IELTS JSON
 │  └─ src\test\java\
-├─ miniprogram\             小程序（阶段 2 开始）
+├─ miniprogram\             小程序（阶段 2：6 个页面 + 2 个组件）
 ├─ scripts\                 环境、词库生成等脚本
 ├─ docs\                    环境与设计记录
 └─ .github\                 workflows、Issue/PR 模板
@@ -91,6 +91,14 @@ mvnw.cmd test
 
 阶段 1 覆盖 JWT、微信登录服务（mock WxJava）、词库导入服务；阶段 2 覆盖日历聚合、新学批次、按日期复习与错词提交、词库切换、用户昵称；CSV RFC 4180 七类边界测试在阶段 5。
 
+小程序端自检（不需要微信开发者工具）：
+
+```bat
+cd miniprogram
+python scripts\check.py       :: JSON/JS/WXML 静态检查
+node scripts\logic-test.js    :: 页面逻辑冒烟
+```
+
 ### 阶段 2 接口（已实现）
 
 | 方法 | 路径 | 说明 |
@@ -105,20 +113,20 @@ mvnw.cmd test
 
 详细契约（请求/响应/错误码）见 `docs/stage-2-ui-spec.md` §7。
 
-## 小程序端配置（阶段 2 起）
+## 小程序端配置
 
-- AppID 写入 `miniprogram/project.config.json` 的 `appid`。
-- 后端地址在 `miniprogram/config/index.js`（计划）区分开发/生产：
-  - 开发（路径 B 过渡）：`http://<公网IP>:8080/`
+- AppID `wx1a3282cb951d51b8` 已写入 `miniprogram/project.config.json`。
+- 打开方式、目录说明与自检命令见 [`miniprogram/README.md`](miniprogram/README.md)。
+- 后端地址在 `miniprogram/config/index.js`，按运行环境区分：
+  - 开发（路径 B 过渡）：`http://127.0.0.1:8080/`（真机调试改成电脑局域网 IP）
   - 生产：`https://<已备案域名>/`
 - 开发阶段在微信开发者工具中关闭“校验合法域名、web-view（业务域名）、TLS 版本以及 HTTPS 证书”。
 - 体验版/正式版在真机上必须使用已备案的 HTTPS 域名。
 - 请求统一封装在 `miniprogram/utils/request.js`，自动携带 `Authorization: Bearer <token>`；页面不直接散落 `wx.request`。
 - 登录时机：首页、词库列表不强制登录；“开始学习”“提交复习”等写操作才触发 `wx.login()`。
-- 1.0 配置开关（阶段 4/5 引入）：
+- 1.0 配置开关（`miniprogram/config/feature.js`，默认 `false`，阶段 4/5 再启用）：
 
 ```js
-// miniprogram/config/feature.js（计划）
 module.exports = {
   enableUserWordbook: false,  // 自建词库入口
   enableFileImport: false     // 文件导入入口
@@ -190,7 +198,7 @@ module.exports = {
 | 版本 | 日期 | 内容 |
 |---|---|---|
 | 阶段 1 | 2026-10 | 后端骨架、四张表、ECDICT 词库导入、WxJava + JWT 登录、单元测试 |
-| 阶段 2（进行中） | 2026-10 | 小程序 UI 规范（`docs/stage-2-ui-spec.md`）、7 个业务接口、27 个单元测试、真实 MySQL 冒烟 |
+| 阶段 2（进行中） | 2026-10 | 小程序 UI 规范（`docs/stage-2-ui-spec.md`）、7 个业务接口、6 个页面 + 2 个组件、27 个单元测试、34 项接口冒烟、11 项页面逻辑冒烟 |
 
 ## 上线前检查项（阶段 6 使用）
 
