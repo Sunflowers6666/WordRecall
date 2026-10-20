@@ -46,12 +46,17 @@
         <view class="progress-bar" style="width: {{progressPercent}}%"></view>
       </view>
 
-      <word-card word="{{current}}" revealed="{{true}}"></word-card>
+      <word-card
+        word="{{current}}"
+        revealed="{{revealed}}"
+        show-reveal="{{true}}"
+        bind:reveal="onReveal"
+      ></word-card>
 
       <view class="finish-link" bindtap="onFinishEarly">结束并保存</view>
     </view>
 
-    <view class="action-bar">
+    <view wx:if="{{revealed}}" class="action-bar">
       <view class="btn btn-secondary" bindtap="onForgot">没记住</view>
       <view class="btn btn-primary" bindtap="onRemember">记住了</view>
     </view>

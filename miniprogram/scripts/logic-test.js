@@ -299,14 +299,21 @@ const dateUtil = require('../utils/date')
 
   const reviewPage = loadPage('../pages/review/review')
 
-  await checkAsync('复习提交只回传没记住的词', async () => {
+  await checkAsync('复习先遮挡释义，点开才显示按钮', async () => {
     appGlobal.globalData.reviewResult = null
     reviewPage.onLoad({ date: todayIso })
     await flush()
     assert.strictEqual(reviewPage.data.state, 'ready')
     assert.strictEqual(reviewPage.data.batchSize, 2)
+    assert.strictEqual(reviewPage.data.revealed, false, '复习默认应遮挡释义')
+
+    reviewPage.onReveal()
+    assert.strictEqual(reviewPage.data.revealed, true)
+
     reviewPage.onForgot()
     assert.deepStrictEqual(reviewPage.data.wrongIds, [1])
+    assert.strictEqual(reviewPage.data.revealed, false, '翻到下一个词应重新遮挡')
+
     reviewPage.onRemember()
     await flush()
     assert.strictEqual(reviewPage.data.state, 'submitting')

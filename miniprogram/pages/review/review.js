@@ -16,7 +16,9 @@ Page({
     batchSize: 0,
     progressPercent: 0,
     wrongIds: [],
-    wrongOnly: false
+    wrongOnly: false,
+    /** 复习也先遮挡释义，点卡片才显示 */
+    revealed: false
   },
 
   onLoad(query) {
@@ -50,7 +52,8 @@ Page({
         current: words[0],
         batchSize: words.length,
         progressPercent: 0,
-        wrongIds: []
+        wrongIds: [],
+        revealed: false
       })
     } catch (error) {
       this.setData({ state: 'error', errorKind: errorKind(error) })
@@ -63,6 +66,10 @@ Page({
 
   onForgot() {
     this.advance(true)
+  },
+
+  onReveal() {
+    this.setData({ revealed: true })
   },
 
   advance(isWrong) {
@@ -84,7 +91,8 @@ Page({
       wrongIds,
       index: next,
       current: words[next],
-      progressPercent: Math.round((next / words.length) * 100)
+      progressPercent: Math.round((next / words.length) * 100),
+      revealed: false
     })
   },
 

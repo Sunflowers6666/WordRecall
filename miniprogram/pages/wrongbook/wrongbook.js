@@ -12,7 +12,9 @@ Page({
     index: 0,
     current: null,
     remembered: [],
-    progressPercent: 0
+    progressPercent: 0,
+    /** 与复习页一致：先遮挡释义，点卡片才显示 */
+    revealed: false
   },
 
   onShow() {
@@ -43,8 +45,13 @@ Page({
       index: 0,
       current: this.data.words[0],
       remembered: [],
-      progressPercent: 0
+      progressPercent: 0,
+      revealed: false
     })
+  },
+
+  onReveal() {
+    this.setData({ revealed: true })
   },
 
   onRemember() {
@@ -67,7 +74,8 @@ Page({
       remembered,
       index: next,
       current: this.data.words[next],
-      progressPercent: Math.round((next / this.data.words.length) * 100)
+      progressPercent: Math.round((next / this.data.words.length) * 100),
+      revealed: false
     })
   },
 
