@@ -4,5 +4,7 @@ public record WordbookDto(Long id,
                           String name,
                           String description,
                           long wordCount,
-                          boolean selected) {
+                          boolean selected,
+                          boolean editable,
+                          String source) {
 }

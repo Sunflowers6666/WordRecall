@@ -16,6 +16,12 @@ public class Wordbook {
 
     private String name;
     private String description;
+
+    /** BUILTIN 或 USER */
     private String source;
+
+    /** 空 = 预置词库；非空 = 该用户自建 */
+    private Long ownerId;
+
     private LocalDateTime createdAt;
 }
