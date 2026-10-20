@@ -1,6 +1,6 @@
 # WordRecall 交接文档
 
-> 更新时间：2026-10-20 19:55（Asia/Shanghai）
+> 更新时间：2026-10-20 21:45（Asia/Shanghai）
 > 新窗口请先读本文件，再读 `README.md` 和 `git log`。本文件不包含任何密码、PAT、AppSecret、JWT 密钥。
 
 ## 1. 项目基本信息
@@ -12,7 +12,7 @@
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
 | GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
-| 当前阶段 | **阶段 4 自建词库已完成，待真机验证**（后端 60 单测 + 19 冒烟，小程序 16 项逻辑冒烟） |
+| 当前阶段 | **阶段 4 自建词库已完成并合并**；下一步阶段 5（文件导入）/ 上线准备 |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -90,9 +90,9 @@ CET-6 = 5407
 IELTS = 5040
 users = 1
 learning_record = 0（测试数据已清理；真实登录验证时曾写入 40 条）
-backend_tests = 41 passed
+backend_tests = 60 passed
 miniprogram_checks = check.py OK（JSON/JS/WXML 静态检查）
-miniprogram_logic = 11 passed
+miniprogram_logic = 16 passed
 audio_us = 14296 个 mp3（138.4 MB，生成 565 秒，0 失败）
 examples = 14268 条入库：CET-4 3848/3849（100%）、CET-6 5392/5407（99.7%）、IELTS 5028/5040（99.8%）
 ```
@@ -109,15 +109,16 @@ examples = 14268 条入库：CET-4 3848/3849（100%）、CET-6 5392/5407（99.7%
 
 ```text
 main:                        阶段 1 完成，与 develop 同步（v1.0.0 时打 tag）
-develop:                     8354393 Merge pull request #6（阶段 3 全部内容）+ 后续文档提交
+develop:                     4025531 Merge pull request #8（阶段 4）
+feature/stage-4-wordbook:    已合并，远程分支已删除
 feature/stage-3-learning:    已合并，远程分支已删除
 feature/stage-2-miniprogram: 已合并，远程分支已删除
 feature/stage-1-backend:     已合并，保留
 工作区:                      clean
 远程:                        origin https://github.com/Sunflowers6666/WordRecall.git
 已推送:                      是（main / develop）
-Issue:                       #1 #3 #5 全部 CLOSED
-PR:                          #2 #4 #6 全部 MERGED
+Issue:                       #1 #3 #5 #7 全部 CLOSED
+PR:                          #2 #4 #6 #8 全部 MERGED
 ```
 
 分支策略：`main` 稳定、`develop` 集成、`feature/*` 功能分支；每个阶段 PR 到 `develop` 后删除功能分支。`main` 按计划在阶段 6 统一更新。
@@ -188,6 +189,10 @@ mysql --defaults-extra-file="E:\Develop\MySQL\.secrets\client-root.cnf" -D worda
 阶段 1 PR:       #2 MERGED → develop
 阶段 2 Issue:    #3 CLOSED
 阶段 2 PR:       #4 MERGED → develop（12 个提交）
+阶段 3 Issue:    #5 CLOSED
+阶段 3 PR:       #6 MERGED
+阶段 4 Issue:    #7 CLOSED
+阶段 4 PR:       #8 MERGED → develop（merge commit 4025531）
 CI:              backend-test + miniprogram-check；PR 与 develop push 均 SUCCESS
 Secret scanning: enabled
 Push protection: enabled
@@ -198,16 +203,14 @@ Dependabot:      disabled（可选，启用前需用户确认）
 
 如凭据丢失或 `gh auth status` 显示未登录：重新创建一个 Classic PAT（`repo`、`workflow`、`read:org`），保存到 `E:\Develop\_downloads\gh-token.txt`，执行 `gh auth login --with-token < "E:\Develop\_downloads\gh-token.txt"`，然后立即删除文件。**不要把 PAT 发到聊天。**
 
-## 8. 下一步（真机验证 → 阶段 4）
+## 8. 下一步（阶段 5：文件导入）
 
-1. **真机验证**（当前重点）：
-   - 电脑 IP `172.20.242.224`（WLAN「SanXiaU」），已写入 `miniprogram/config/index.js`；IP 变了要改
-   - 后端监听 `0.0.0.0:8080`；Windows 防火墙对 java 有 Public 入站放行规则
-   - 手机与电脑连同一 WiFi → 开发者工具「预览」或「真机调试」扫码 → 手机右上角「…」→ 打开调试（跳过域名校验）
-   - 先测：首页词库名 → 开始学习 → 卡片例句 → 点 🔊 美 → 我的页统计
+1. **阶段 5 设计待定**：CSV 优先还是 CSV+Excel、导入到新词库还是已有词库、缺释义是否用 DeepSeek 补全
 2. 英音（可选）：Windows 装 English (UK) 语音包 → `python scripts\dict\generate_audio.py --accent uk` → 卡片加「🔊 英」
-3. 阶段 4 规划（待确认）：自建词库 + 文件导入（1.0 开关默认关闭）
+3. 发布前决定 `enableUserWordbook` 默认值（当前 true）
 4. 云服务器采购、备案、微信后台 request 合法域名（阶段 6 前）
+
+真机环境备查：电脑 IP `172.20.242.224`（WLAN「SanXiaU」，已写入 `config/index.js`）；后端 `0.0.0.0:8080`；手机「打开调试」跳过域名校验。
 
 ## 9. 新窗口启动提示（直接复制）
 
