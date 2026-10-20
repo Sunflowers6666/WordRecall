@@ -1,0 +1,51 @@
+<view class="page">
+  <view class="page-body page-body-with-bar">
+    <state-view wx:if="{{state === 'loading'}}" state="loading"></state-view>
+
+    <state-view wx:elif="{{state === 'error'}}" state="error" kind="{{errorKind}}" bind:action="onRetry"></state-view>
+
+    <block wx:else>
+      <view class="card form-card">
+        <view class="field">
+          <view class="label">单词 <text class="required">*</text></view>
+          <input class="input" value="{{form.spelling}}" data-field="spelling" bindinput="onInput"
+                 placeholder="例如：abandon" placeholder-class="ph" />
+        </view>
+
+        <view class="field">
+          <view class="label">音标</view>
+          <input class="input" value="{{form.phonetic}}" data-field="phonetic" bindinput="onInput"
+                 placeholder="例如：/əˈbændən/" placeholder-class="ph" />
+        </view>
+
+        <view class="field">
+          <view class="label">释义 <text class="required">*</text></view>
+          <textarea class="textarea" value="{{form.meaning}}" data-field="meaning" bindinput="onInput"
+                    auto-height maxlength="500" placeholder="例如：v. 放弃；抛弃" placeholder-class="ph" />
+        </view>
+
+        <view class="field">
+          <view class="label">例句</view>
+          <textarea class="textarea" value="{{form.exampleSentence}}" data-field="exampleSentence"
+                    bindinput="onInput" auto-height maxlength="500"
+                    placeholder="可选，例如：They had to abandon the plan." placeholder-class="ph" />
+        </view>
+
+        <view class="field">
+          <view class="label">例句翻译</view>
+          <textarea class="textarea" value="{{form.exampleTranslation}}" data-field="exampleTranslation"
+                    bindinput="onInput" auto-height maxlength="500"
+                    placeholder="可选，例如：他们不得不放弃这个计划。" placeholder-class="ph" />
+        </view>
+      </view>
+
+      <view wx:if="{{!isNew}}" class="delete-link" bindtap="onDelete">删除这个单词</view>
+    </block>
+  </view>
+
+  <view wx:if="{{state === 'ready'}}" class="bottom-bar">
+    <view class="btn btn-primary save-btn {{saving ? 'btn-disabled' : ''}}" bindtap="onSubmit">
+      {{saving ? '保存中…' : '保存'}}
+    </view>
+  </view>
+</view>

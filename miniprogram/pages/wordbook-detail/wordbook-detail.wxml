@@ -1,0 +1,48 @@
+<view class="page">
+  <view class="page-body page-body-with-bar">
+    <state-view wx:if="{{state === 'loading'}}" state="loading"></state-view>
+
+    <state-view wx:elif="{{state === 'error'}}" state="error" kind="{{errorKind}}" bind:action="onRetry"></state-view>
+
+    <block wx:else>
+      <view class="card head">
+        <view class="head-row">
+          <view class="head-name">{{book.name}}</view>
+          <view wx:if="{{isCurrent}}" class="pill">当前词库</view>
+        </view>
+        <view class="t-caption">{{total}} 词</view>
+
+        <view class="actions">
+          <view class="btn btn-primary {{isCurrent ? 'btn-disabled' : ''}}" bindtap="onSetCurrent">
+            {{isCurrent ? '已是当前词库' : '设为当前词库'}}
+          </view>
+        </view>
+        <view class="sub-actions">
+          <view class="text-action" bindtap="onRename">改名</view>
+          <view class="text-action danger" bindtap="onDelete">删除词库</view>
+        </view>
+      </view>
+
+      <view class="list-title">单词（{{total}}）</view>
+
+      <view wx:if="{{words.length}}" class="card list">
+        <view class="list-row" wx:for="{{words}}" wx:key="id" bindtap="onWordTap" data-index="{{index}}">
+          <view class="list-row-main">
+            <view class="word-name">{{item.spelling}}</view>
+            <view class="word-meaning">{{item.meaning}}</view>
+          </view>
+          <view class="list-row-arrow">›</view>
+        </view>
+      </view>
+
+      <view wx:else class="card empty">
+        <view class="t-secondary">这个词库还没有单词</view>
+        <view class="t-caption">点下面「添加单词」开始录入</view>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{state === 'ready'}}" class="bottom-bar">
+    <view class="btn btn-primary add-btn" bindtap="onAdd">+ 添加单词</view>
+  </view>
+</view>

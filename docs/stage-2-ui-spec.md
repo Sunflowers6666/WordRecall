@@ -303,7 +303,7 @@ miniprogram/
 ├─ utils/auth.js       ensureLogin()、token 存取
 ├─ components/word-card/
 ├─ components/state-view/
-├─ pages/{index,learn,review,result,profile,wordbook}/
+├─ pages/{index,learn,review,result,profile,wordbook,wordbook-detail,word-edit}/
 └─ scripts/            check.py（静态检查）、logic-test.js（页面逻辑冒烟）
 ```
 

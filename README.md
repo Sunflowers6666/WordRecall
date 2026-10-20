@@ -117,9 +117,18 @@ node scripts\logic-test.js    :: 页面逻辑冒烟
 
 | 方法 | 路径 | 说明 |
 |---|---|---|
-| GET | `/api/wordbooks` | 词库列表（可匿名，带 token 时返回 `selected`） |
-| PATCH | `/api/users/me` | 修改昵称 |
+| GET | `/api/wordbooks` | 词库列表（可匿名；登录时返回预置 + 自己的词库，带 `editable`） |
+| POST | `/api/wordbooks` | 新建自建词库 `{name, description?}` |
+| PATCH | `/api/wordbooks/{id}` | 改名/改描述（仅本人） |
+| DELETE | `/api/wordbooks/{id}` | 删除自建词库（仅本人，级联删词与学习记录） |
+| GET | `/api/wordbooks/{id}/words` | 词条列表 `?offset=&limit=` |
+| POST | `/api/wordbooks/{id}/words` | 添加词条（仅本人） |
+| GET | `/api/words/{id}` | 单个词条 |
+| PUT | `/api/words/{id}` | 编辑词条（仅本人） |
+| DELETE | `/api/words/{id}` | 删除词条（仅本人） |
+| PATCH | `/api/users/me` | 修改昵称 / 每批词数 |
 | PUT | `/api/users/me/wordbook` | 切换当前词库 |
+| GET | `/api/users/me/stats` | 学习统计 |
 | GET | `/api/calendar?year=&month=` | 月份日历：每天学了多少词、错了几个 |
 | POST | `/api/study/sessions` | 预览一批未学单词（不写记录） |
 | POST | `/api/study/records` | 上报翻过的单词，写入当天学习记录 |

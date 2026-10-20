@@ -12,7 +12,7 @@
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
 | GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
-| 当前阶段 | **阶段 4 进行中（已暂停，2026-10-20 20:20）**：后端代码已写、编译通过，待补单测与小程序 UI |
+| 当前阶段 | **阶段 4 自建词库已完成，待真机验证**（后端 60 单测 + 19 冒烟，小程序 16 项逻辑冒烟） |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -229,43 +229,36 @@ backend 测试是否通过，然后按 HANDOFF 的“下一步”继续。
 - 区分两个东西：**AppSecret**（32 位字母数字）与**上传密钥**（`-----BEGIN RSA PRIVATE KEY-----` 开头的私钥），后者只用于阶段 6 的 CI 上传。
 - **2026-10-20 secret scanning 告警 #1**：GitHub 把 `miniprogram/project.config.json` 里的 **AppID** 标成 `tencent_wechat_api_app_id`。AppID 本就是公开信息（每个小程序客户端里都有），**不是密钥**；已在 GitHub 上标记为 `false_positive` 解决，当前 open 告警为 0。真正保密的 AppSecret 从未进入仓库。
 
-## 11. 暂停快照（2026-10-20 20:20，阶段 4 进行中）
-
-> 用户要打游戏，已停后端与 MySQL。恢复时照下面步骤走即可。
+## 11. 阶段 4：自建词库（2026-10-20，待真机验证）
 
 ### 已完成（分支 `feature/stage-4-wordbook`，Issue #7）
 
 - 数据库：`wordbook.owner_id` + `idx_wordbook_owner` + 外键（**已应用到本机 wordapp 库**）；迁移脚本 `db/migration-v4-wordbook-owner.sql`；`schema.sql` 已加 `owner_id` 列与索引
-- 后端代码（`mvn -B compile` 通过；**尚未写单测、未跑接口冒烟**）：
-  - `domain/Wordbook`：新增 `ownerId`
-  - `dto/WordbookDto`：新增 `editable`、`source`
+- 后端（**60 个单测 + 19 项接口冒烟全过**）：
+  - `domain/Wordbook.ownerId`；`WordbookDto` 增加 `editable`、`source`
   - 新增 `WordbookCreateRequest`、`WordbookUpdateRequest`、`WordItemRequest`、`WordbookWordsDto`
-  - `WordbookService`：`listForUser` / `listBuiltin` / `create` / `update` / `delete` / `requireOwned`（非本人一律 404）
+  - `WordbookService`：`listForUser` / `listBuiltin` / `create` / `update` / `delete` / `requireOwned`
   - `WordService`：`requireById` / `listByWordbook` / `countInWordbook` / `add` / `update` / `delete` / `nextSortOrder`
   - `WordbookController`：`GET/POST /api/wordbooks`、`PATCH/DELETE /api/wordbooks/{id}`、`GET/POST /api/wordbooks/{id}/words`
-  - `WordController`：`PUT/DELETE /api/words/{id}`
-- 权限约定：预置词库 `owner_id=NULL` 只读；重名 409；删除当前词库由外键把 `user.current_wordbook_id` 置空
+  - `WordController`：`GET/PUT/DELETE /api/words/{id}`
+- 权限：预置词库只读（改/删一律 404）；非本人词库 404；重名 409；重复单词 409；删当前词库由外键置空 `current_wordbook_id`
+- 小程序（页面逻辑冒烟 16 项通过）：
+  - 词库页：预置 / 我的 分组，`+ 新建`（`enableUserWordbook` 开关控制）
+  - 新增 `pages/wordbook-detail`：词条列表、设为当前词库、改名、删除词库、添加入口
+  - 新增 `pages/word-edit`：新增/编辑词条表单（单词、音标、释义、例句、翻译），编辑时可删除
+  - `config/feature.js` 的 `enableUserWordbook` 本地已设为 `true`
 
-### 未做（恢复后从这里继续）
+### 待做
 
-1. 单测：`WordbookServiceTest`（建/改/删/越权/重名）、`WordServiceTest`（加/改/删/排序/重词）
-2. 接口冒烟（临时用户 + JWT）：建库 → 加 3 词 → 切库 → `study/sessions` 能取到 → 删库级联
-3. 小程序 UI：词库页分组（预置 / 我的）、新建词库、改名/删除、词库详情页（词条列表 + 加/改/删词）
-4. `config/feature.js` 的 `enableUserWordbook` 开关接入（本地先 true，发布前再评估）
-5. 真机验证、PR、关 Issue #7
+1. **真机验证**：新建词库 → 加 5 个词 → 设为当前 → 开始学习能取到这些词
+2. 走 PR → 合并 develop → 关 Issue #7
+3. 发布前决定 `enableUserWordbook` 默认值（当前 true）；阶段 5 再做 CSV/Excel 导入
 
-### 恢复步骤
+### 环境
 
 ```bat
-:: 1. 起 MySQL（后端依赖）
 scripts\setup\windows\start-mysql.cmd
-
-:: 2. 后端编译 + 测试
-cd backend
-E:\Develop\Maven\apache-maven-3.10.0\bin\mvn.cmd -B test
-
-:: 3. 起后端（开发工具/真机调试时用）
-scripts\setup\windows\start-backend.cmd
+scripts\setup\windows\start-backend.cmd     :: 8080，真机用 172.20.242.224:8080
 ```
 
-注意：其它环境（服务器/新机器）建库时需要执行 `migration-v4-wordbook-owner.sql`；`schema.sql` 里 `wordbook` 已含 `owner_id` 列，但外键要在 `user` 表之后单独 ALTER（迁移脚本里已包含）。
+注意：其它环境（服务器/新机器）建库时需要执行 `migration-v4-wordbook-owner.sql`。

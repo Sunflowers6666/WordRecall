@@ -1,0 +1,54 @@
+.form-card {
+  padding: 8rpx 32rpx;
+}
+
+.field {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--c-line);
+}
+
+.field:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-size: 26rpx;
+  color: var(--c-text-3);
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.required {
+  color: var(--c-danger);
+}
+
+.input {
+  font-size: 32rpx;
+  color: var(--c-text);
+  min-height: 64rpx;
+  line-height: 64rpx;
+}
+
+.textarea {
+  width: 100%;
+  font-size: 32rpx;
+  color: var(--c-text);
+  line-height: 1.6;
+  min-height: 64rpx;
+}
+
+.ph {
+  color: var(--c-text-disabled);
+}
+
+.delete-link {
+  margin-top: 32rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--c-danger-strong);
+  padding: 16rpx;
+}
+
+.save-btn {
+  flex: 1;
+}

@@ -4,14 +4,39 @@
 
     <state-view wx:elif="{{state === 'error'}}" state="error" kind="{{errorKind}}" bind:action="onRetry"></state-view>
 
-    <view wx:else class="card list">
-      <view class="list-row" wx:for="{{list}}" wx:key="id" bindtap="onPick" data-index="{{index}}">
-        <view class="list-row-main">
-          <view class="wb-name">{{item.name}}</view>
-          <view class="t-caption">{{item.wordCount}} 词</view>
+    <block wx:else>
+      <view class="section-title">预置词库</view>
+      <view class="card list">
+        <view class="list-row" wx:for="{{builtin}}" wx:key="id" bindtap="onPickBuiltin" data-index="{{index}}">
+          <view class="list-row-main">
+            <view class="wb-name">{{item.name}}</view>
+            <view class="t-caption">{{item.wordCount}} 词</view>
+          </view>
+          <view wx:if="{{item.selected}}" class="check">✓</view>
         </view>
-        <view wx:if="{{item.selected}}" class="wb-check">✓</view>
       </view>
-    </view>
+
+      <block wx:if="{{canCreate}}">
+        <view class="section-head">
+          <view class="section-title">我的词库</view>
+          <view class="create-btn" bindtap="onCreate">+ 新建</view>
+        </view>
+
+        <view wx:if="{{mine.length}}" class="card list">
+          <view class="list-row" wx:for="{{mine}}" wx:key="id" bindtap="onPickMine" data-index="{{index}}">
+            <view class="list-row-main">
+              <view class="wb-name">{{item.name}}<text wx:if="{{item.selected}}" class="current-tag"> · 当前</text></view>
+              <view class="t-caption">{{item.wordCount}} 词</view>
+            </view>
+            <view class="list-row-arrow">›</view>
+          </view>
+        </view>
+
+        <view wx:else class="card empty-mine">
+          <view class="t-secondary">还没有自建词库</view>
+          <view class="t-caption">点右上角「+ 新建」，把你要背的词表放进来</view>
+        </view>
+      </block>
+    </block>
   </view>
 </view>
