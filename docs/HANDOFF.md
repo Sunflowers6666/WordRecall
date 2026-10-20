@@ -189,3 +189,6 @@ backend 测试是否通过，然后按 HANDOFF 的“下一步”继续。
 - 不把 AppSecret、数据库密码、JWT 密钥发到聊天、Issue、PR 或 Actions 日志。
 - 本地密钥目录：`E:\Develop\MySQL\.secrets\`（不在仓库内）。
 - 如果发现密钥进入 Git 历史：先轮换，再清理历史，不能只删除文件。
+- **2026-10-20 事件**：曾把「小程序代码上传密钥」（RSA 私钥）误粘进 `backend/application-secret.yml`。已清理（文件恢复 4 个配置项），并已验证：该文件未被 Git 跟踪、历史中也无该私钥。**这把上传密钥应视为已泄露，需要在微信公众平台重置**（开发管理 → 开发设置 → 小程序代码上传）。
+- 填 AppSecret 用 `scripts/setup/windows/set-wx-secret.py`：隐藏输入、校验 32 位字母数字、自动清掉误粘的多行内容；不要用记事本直接粘贴。
+- 区分两个东西：**AppSecret**（32 位字母数字）与**上传密钥**（`-----BEGIN RSA PRIVATE KEY-----` 开头的私钥），后者只用于阶段 6 的 CI 上传。

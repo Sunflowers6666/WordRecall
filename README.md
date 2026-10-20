@@ -65,6 +65,13 @@ mysql --defaults-extra-file="E:\Develop\MySQL\.secrets\client-root.cnf" -D worda
 
 复制 `backend\src\main\resources\application-secret.example.yml` 为 `backend\application-secret.yml`，填入本机数据库密码、JWT 密钥、AppID/AppSecret。
 
+填 AppSecret 建议用脚本（隐藏输入、校验格式、自动清掉误粘的多行内容）：
+
+```bat
+python scripts\setup\windows\set-wx-secret.py
+```
+
+- 微信 **AppSecret** 是 32 位字母数字；「小程序代码上传密钥」是 RSA 私钥，两者不要混。私钥只用于阶段 6 的 CI 上传，不要填进这个文件。
 - `backend/application-secret.yml` 已被 `.gitignore` 排除，**不要提交**。
 - AppSecret 绝不写入小程序端，也不要发到聊天或 Issue。
 - 生产环境不读取文件，全部使用环境变量：`DB_URL`、`DB_USERNAME`、`DB_PASSWORD`、`JWT_SECRET`、`WX_MINIAPP_APPID`、`WX_MINIAPP_SECRET`。
