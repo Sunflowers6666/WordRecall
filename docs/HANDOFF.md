@@ -73,7 +73,11 @@
   - 英音暂缺：本机无 en-GB 语音包；Windows 设置 → 时间和语言 → 语言和区域 → 添加 English (United Kingdom) 语音包后会多出 `Microsoft Hazel Desktop`，重跑脚本加 `--accent uk` 即可
   - 音频与例句数据都在 `backend/data/`（已 gitignore），换机器需重跑两个脚本
 - 后端单测 41 → **46 全部通过**（新增音频服务 5 个）
-- 待做：例句全量生成完成后导入；真机适配
+- **例句（DeepSeek 批量生成，已完成）**：`scripts/dict/generate_examples.py` 按词库难度生成英文例句 + 中文翻译（CET-4 ≤8 词 / CET-6 ≤12 / IELTS ≤16），953 次调用约 51 分钟；`import_examples.py` 导入 `word.example_*`（只填空值）
+  - 覆盖率：CET-4 3848/3849（100%）、CET-6 5392/5407（99.7%）、IELTS 5028/5040（99.8%），合计 14268/14296
+  - 未覆盖的 28 个词保持「暂无例句」（生成结果没通过“句子必须包含目标词 + 不超词数”的校验）
+  - 重新生成：删掉 `backend/data/examples/*.jsonl` 或对应行后重跑脚本（可断点续跑）
+- 待做：真机适配；英音（装 en-GB 语音包后 `--accent uk`）
 
 ### 实测数据
 
@@ -88,7 +92,7 @@ backend_tests = 41 passed
 miniprogram_checks = check.py OK（JSON/JS/WXML 静态检查）
 miniprogram_logic = 11 passed
 audio_us = 14296 个 mp3（138.4 MB，生成 565 秒，0 失败）
-examples = 生成中（DeepSeek，完成前只有试跑的 20 条已入库）
+examples = 14268 条入库：CET-4 3848/3849（100%）、CET-6 5392/5407（99.7%）、IELTS 5028/5040（99.8%）
 ```
 
 ### 未完成 / 待用户操作
