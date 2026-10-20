@@ -34,6 +34,12 @@ module.exports = {
    * 在线版改成 false 即恢复走后端（页面代码不用动）。
    */
   offline: true,
+  /**
+   * 发音插件（微信同声传译）开关。
+   * 插件需要在小程序后台「插件管理」里添加成功才能用；
+   * 没添加时 app.json 不要声明插件，否则开发者工具会拒绝启动。
+   */
+  ttsPlugin: false,
   baseUrl: BASE_URL[env] || BASE_URL.develop,
   /** 每批新学词数默认值（服务端按 user.batch_size 返回，这里只作兜底展示） */
   batchSize: 20,
