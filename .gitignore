@@ -57,3 +57,6 @@ miniprogram/miniprogram_npm/
 # ---- Local LLM config ----
 llm-secret.yml
 **/llm-secret.yml
+
+# ---- Generated data (examples, audio cache) ----
+backend/data/
