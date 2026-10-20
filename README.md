@@ -119,7 +119,8 @@ node scripts\logic-test.js    :: 页面逻辑冒烟
 | PATCH | `/api/users/me` | 修改昵称 |
 | PUT | `/api/users/me/wordbook` | 切换当前词库 |
 | GET | `/api/calendar?year=&month=` | 月份日历：每天学了多少词、错了几个 |
-| POST | `/api/study/sessions` | 取一批未学单词并记入当天记录 |
+| POST | `/api/study/sessions` | 预览一批未学单词（不写记录） |
+| POST | `/api/study/records` | 上报翻过的单词，写入当天学习记录 |
 | GET | `/api/review?date=` | 某天首次学过的单词 |
 | POST | `/api/review/submit` | 提交某天错词，回写 `is_wrong` |
 

@@ -57,6 +57,8 @@
 - 自检：`python miniprogram/scripts/check.py` 通过（11 JSON / 15 JS / 8 WXML：JSON 解析、node 语法、WXML 标签配对、页面四件套、组件路径、tabBar 引用）
 - 页面逻辑冒烟：`node miniprogram/scripts/logic-test.js` **11 项通过**（月历网格、今天/未来标记、月份切换与未来月拦截、新学翻页、复习只回传错词、结果页数据、词库切换）
 - 已验证（2026-10-20 17:57，开发者工具）：真实 `wx.login` → `code2Session` → 建用户 → 拉 20 词并写入 `learning_record`；页面渲染、日历回读正常
+- **记录时机改为「翻过才记」（2026-10-20）**：`POST /api/study/sessions` 只预览不写记录；新增 `POST /api/study/records` 由客户端在点「下一个 / 学完了」时逐词上报（幂等，重复上报 `recorded=0`）。避免“点进学习页又退出”留下幽灵记录
+- 真实接口验证：预览 5 词 → 0 条记录；上报 1 → 1 条；重复上报 → 0；再报 2 → 3 条；再次预览自动跳过已记录的 3 个
 - 未验证：真机 iOS / Android（需要局域网 IP + 同一网络）
 
 ### 实测数据
@@ -68,8 +70,8 @@ CET-6 = 5407
 IELTS = 5040
 users = 1
 learning_record = 40（2026-10-20，真实登录产生）
-backend_tests = 27 passed
-miniprogram_checks = check.py OK（11 JSON / 16 JS / 8 WXML）
+backend_tests = 32 passed
+miniprogram_checks = check.py OK（JSON/JS/WXML 静态检查）
 miniprogram_logic = 11 passed
 ```
 

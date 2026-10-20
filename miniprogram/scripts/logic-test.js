@@ -31,7 +31,7 @@ async function checkAsync(name, fn) {
 }
 
 const storage = {}
-const calls = { navigateTo: [], redirectTo: [], switchTab: [], toast: [] }
+const calls = { navigateTo: [], redirectTo: [], switchTab: [], toast: [], requests: [] }
 
 let todayIso = new Date().getFullYear() + '-' +
   String(new Date().getMonth() + 1).padStart(2, '0') + '-' +
@@ -53,6 +53,7 @@ const routes = {
     summary: { days: 1, words: 20, wrong: 2 }
   }),
   '/api/study/sessions': () => ({ words: words, todayWordCount: 2, remaining: 3827 }),
+  '/api/study/records': () => ({ recorded: 1, todayWordCount: 3 }),
   '/api/review': () => ({ date: todayIso, words: words }),
   '/api/review/submit': () => ({ date: todayIso, total: 2, wrong: 1 }),
   '/api/users/me': () => ({ id: 1, nickname: '小明', avatarUrl: null, currentWordbookId: 1 }),
@@ -74,11 +75,12 @@ global.wx = {
   stopPullDownRefresh: () => {},
   login: (opts) => opts.success({ code: 'fake-code' }),
   request: (opts) => {
+    const pathOnly = opts.url.replace(/^https?:\/\/[^/]+/, '').split('?')[0]
+    calls.requests.push({ method: opts.method, path: pathOnly, body: opts.data })
     setTimeout(() => {
-      const url = opts.url.replace(/^https?:\/\/[^/]+/, '').split('?')[0]
-      const factory = routes[url]
+      const factory = routes[pathOnly]
       if (!factory) {
-        opts.fail({ errMsg: 'no fake route: ' + url })
+        opts.fail({ errMsg: 'no fake route: ' + pathOnly })
         return
       }
       opts.success({ statusCode: 200, data: { code: 0, message: 'ok', data: factory() } })
@@ -185,21 +187,39 @@ const dateUtil = require('../utils/date')
 
   const learnPage = loadPage('../pages/learn/learn')
 
-  await checkAsync('新学按批翻页并在最后一词进入完成态', async () => {
+  await checkAsync('新学翻过才记录，打开页面不写任何记录', async () => {
+    calls.requests.length = 0
     learnPage.onLoad()
     await flush()
     assert.strictEqual(learnPage.data.state, 'ready')
     assert.strictEqual(learnPage.data.batchSize, 2)
     assert.strictEqual(learnPage.data.current.spelling, 'abandon')
     assert.strictEqual(learnPage.data.revealed, false)
+    assert.strictEqual(
+      calls.requests.filter((item) => item.path === '/api/study/records').length,
+      0,
+      '打开页面不应写学习记录'
+    )
+
     learnPage.onReveal()
     assert.strictEqual(learnPage.data.revealed, true)
-    learnPage.onNext()
+
+    await learnPage.onNext()
+    await flush()
     assert.strictEqual(learnPage.data.index, 1)
     assert.strictEqual(learnPage.data.current.spelling, 'benefit')
-    learnPage.onNext()
+    const afterFirst = calls.requests.filter((item) => item.path === '/api/study/records')
+    assert.strictEqual(afterFirst.length, 1)
+    assert.deepStrictEqual(afterFirst[0].body.wordIds, [1])
+
+    await learnPage.onNext()
+    await flush()
     assert.strictEqual(learnPage.data.state, 'finished')
     assert.strictEqual(learnPage.data.finishedTitle, '本批 2 词已学完')
+    const afterSecond = calls.requests.filter((item) => item.path === '/api/study/records')
+    assert.strictEqual(afterSecond.length, 2)
+    assert.deepStrictEqual(afterSecond[1].body.wordIds, [2])
+    assert.strictEqual(learnPage.data.todayWordCount, 3)
   })
 
   const reviewPage = loadPage('../pages/review/review')

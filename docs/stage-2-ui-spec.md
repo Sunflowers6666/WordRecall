@@ -216,7 +216,8 @@
 - 中部：学习卡片，默认遮罩模式（先想再看）。
 - 底部：次按钮「上一个」（第一词禁用）+ 主按钮「下一个」；最后一词主按钮文案改「学完了，去复习」。
 - 学完：卡片区换成完成态（「本批 20 词已学完」+ 主按钮「现在复习」+ 文字按钮「回到日历」），不跳新页面。
-- 中途返回：系统导航返回键无法拦截（1.0 用默认导航栏），且进入本页时批次已写入服务端，直接返回不会丢数据，因此不做「确定退出」弹窗。
+- 记录时机：**点「下一个」时才把当前词写入当天学习记录**（最后一词点「学完了，去复习」时写入）。打开页面只是预览，不写任何记录；对同一个词重复上报是幂等的。
+- 中途返回：系统导航返回键无法拦截（1.0 用默认导航栏）；已翻过的词已记录，没翻到的不记录，直接返回即可。
 - 请求失败：卡片区换成错误态 + 「重试」；已加载的批次不丢。
 
 ### 5.4 复习 `pages/review/review`
@@ -287,14 +288,16 @@ miniprogram/
 | PUT | `/api/users/me/wordbook` | 需要 | `{wordbookId}` | `{user}` |
 | PATCH | `/api/users/me` | 需要 | `{nickname}` | `{user}` |
 | GET | `/api/calendar?year=2026&month=10` | 需要 | — | `{month:"2026-10", days:[{date,wordCount,wrongCount}], summary:{days,words,wrong}}` |
-| POST | `/api/study/sessions` | 需要 | `{size:20}` | `{words:[{id,spelling,phonetic,meaning,exampleSentence,exampleTranslation,isWrong}], todayWordCount, remaining}` |
+| POST | `/api/study/sessions` | 需要 | `{size:20}` | 预览一批未学词：`{words:[...], todayWordCount, remaining}`（**不写记录**） |
+| POST | `/api/study/records` | 需要 | `{wordIds:[1,2]}` | 写入当天学习记录：`{recorded, todayWordCount}` |
 | GET | `/api/review?date=2026-10-16` | 需要 | — | `{date, words:[...同上]}` |
 | POST | `/api/review/submit` | 需要 | `{date, wrongWordIds:[1,2]}` | `{date, total:20, wrong:3}` |
 
 规则：
 
 - 未登录访问 `/api/wordbooks` 时 `selected` 全为 `false`（首页可匿名浏览词库）。
-- `POST /api/study/sessions`：从当前词库按 `sort_order` 取未学过的词，写入当天 `learning_record`；同一单词同一天只记一次（`uk_user_word_date`）。`size` 范围 1–50。`remaining` 是本批之后该词库剩余未学词数；`words` 为空表示词库已学完（客户端提示「去练练错词」）。
+- `POST /api/study/sessions`：只预览，从当前词库按 `sort_order` 取未学过的词，**不写任何记录**。`size` 范围 1–50；`remaining` 是本批之后该词库剩余未学词数；`words` 为空表示词库已学完（客户端提示「去练练错词」）。
+- `POST /api/study/records`：客户端每翻过一个词上报一次，服务端写 `learning_record`；同一单词同一天只记一次（`uk_user_word_date`），重复上报返回 `recorded=0`。单词必须属于当前词库，否则 400。
 - `GET /api/review`：当天无记录返回 200 + `words: []`，客户端显示空状态，不当作错误。
 - `POST /api/review/submit`：`wrongWordIds` 置 `is_wrong=1`，当天其余记录置 `0`（以最后一次提交为准）。当天无记录返回 404；单词不属于该日期返回 400。
 - 日历 `wrongCount` = 当天 `is_wrong=1` 的记录数；`summary.days` = 有记录的天数。
@@ -347,6 +350,6 @@ miniprogram/
 ## 12. 实现与验证（2026-10-20）
 
 - 代码：`miniprogram/` 下 6 个页面 + 2 个组件 + `utils/`（request/auth/date/feedback）+ `config/`（index/feature）
-- 静态检查 `python miniprogram/scripts/check.py`：11 个 JSON、15 个 JS、8 个 WXML 全部通过（JSON 解析、`node --check` 语法、WXML 标签配对、页面四件套齐全、组件路径、tabBar 引用）
+- 静态检查 `python miniprogram/scripts/check.py`：JSON 解析、`node --check` 语法、WXML 标签配对、页面四件套齐全、组件路径、tabBar 引用全部通过
 - 逻辑冒烟 `node miniprogram/scripts/logic-test.js`：11 项通过（月历网格与今天/未来标记、月份切换与未来月拦截、点未来日期无效、新学翻页与完成态、复习只回传错词、结果页数据传递、词库切换选中态）
 - 未验证：微信开发者工具里的真实渲染、真机（iOS/Android）、真实 `code2Session`（需要 AppSecret 与临时 code）
