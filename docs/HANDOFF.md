@@ -12,7 +12,7 @@
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
 | GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
-| 当前阶段 | **阶段 5 文件导入进行中**（后端完成，待真机验证）；阶段 4 已合并 |
+| 当前阶段 | **阶段 5 文件导入已完成并合并**；下一步阶段 6（上线准备）/ 体验增强 |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -109,7 +109,7 @@ examples = 14268 条入库：CET-4 3848/3849（100%）、CET-6 5392/5407（99.7%
 
 ```text
 main:                        阶段 1 完成，与 develop 同步（v1.0.0 时打 tag）
-develop:                     4025531 Merge pull request #8（阶段 4）
+develop:                     ac05988 Merge pull request #10（阶段 5）
 feature/stage-4-wordbook:    已合并，远程分支已删除
 feature/stage-3-learning:    已合并，远程分支已删除
 feature/stage-2-miniprogram: 已合并，远程分支已删除
@@ -117,8 +117,8 @@ feature/stage-1-backend:     已合并，保留
 工作区:                      clean
 远程:                        origin https://github.com/Sunflowers6666/WordRecall.git
 已推送:                      是（main / develop）
-Issue:                       #1 #3 #5 #7 全部 CLOSED
-PR:                          #2 #4 #6 #8 全部 MERGED
+Issue:                       #1 #3 #5 #7 #9 全部 CLOSED
+PR:                          #2 #4 #6 #8 #10 全部 MERGED
 ```
 
 分支策略：`main` 稳定、`develop` 集成、`feature/*` 功能分支；每个阶段 PR 到 `develop` 后删除功能分支。`main` 按计划在阶段 6 统一更新。
@@ -203,12 +203,16 @@ Dependabot:      disabled（可选，启用前需用户确认）
 
 如凭据丢失或 `gh auth status` 显示未登录：重新创建一个 Classic PAT（`repo`、`workflow`、`read:org`），保存到 `E:\Develop\_downloads\gh-token.txt`，执行 `gh auth login --with-token < "E:\Develop\_downloads\gh-token.txt"`，然后立即删除文件。**不要把 PAT 发到聊天。**
 
-## 8. 下一步（阶段 5：文件导入）
+## 8. 下一步（阶段 6：上线准备）
 
-1. **阶段 5 设计待定**：CSV 优先还是 CSV+Excel、导入到新词库还是已有词库、缺释义是否用 DeepSeek 补全
-2. 英音（可选）：Windows 装 English (UK) 语音包 → `python scripts\dict\generate_audio.py --accent uk` → 卡片加「🔊 英」
-3. 发布前决定 `enableUserWordbook` 默认值（当前 true）
-4. 云服务器采购、备案、微信后台 request 合法域名（阶段 6 前）
+1. **上线准备**（需备案通过 + 云服务器）：
+   - 服务器：JDK 17 + MySQL 8 + Nginx，后端 `SPRING_PROFILES_ACTIVE=prod`（全部用环境变量，不读文件）
+   - HTTPS 域名 + 微信公众平台配置 request 合法域名 / 业务域名
+   - 小程序 `config/index.js` 的 trial/release 地址改成正式域名
+   - `miniprogram-ci` 上传：公众平台生成新的上传密钥（之前的已重置）→ GitHub Secret `PRIVATE_KEY` → workflow
+2. 体验增强（可与上线并行）：错词本、英音、每日提醒（订阅消息）、深色模式
+3. 发布前决定 `enableUserWordbook` / `enableFileImport` 默认值（当前都为 true）
+4. `main` 在阶段 6 完成后同步（打 v1.0.0 tag）
 
 真机环境备查：电脑 IP `172.20.242.224`（WLAN「SanXiaU」，已写入 `config/index.js`）；后端 `0.0.0.0:8080`；手机「打开调试」跳过域名校验。
 
@@ -239,28 +243,13 @@ backend 测试是否通过，然后按 HANDOFF 的“下一步”继续。
 - 小程序：词库页分组与新建、`pages/wordbook-detail`、`pages/word-edit`
 - 真机验证通过；Issue #7 已关闭
 
-## 12. 阶段 5：文件导入（进行中，分支 `feature/stage-5-import`，Issue #9）
+## 12. 阶段 5：文件导入（已合并，PR #10 → develop，2026-10-20）
 
-### 已完成
-
-- 后端依赖：Apache POI 5.2.5（xlsx）+ commons-csv 1.10.0
-- `SheetParser`：CSV（UTF-8/GBK、逗号/分号/Tab、可选表头）与 xlsx（第一个工作表）
-  - 表头别名：`word/spelling/单词/词汇/英文`、`phonetic/音标`、`meaning/释义/中文/翻译`、`example/例句`、`例句翻译`
-  - 无表头时按「单词, 释义, 音标, 例句, 例句翻译」取列
-  - 缺单词/缺释义的行标记为无效并给原因
-- `ImportService` + `ImportController`：
-  - `POST /api/imports/preview`（multipart）→ `{fileName,total,valid,invalid,rows(前50)}`
-  - `POST /api/imports?bookId=` 或 `?newBookName=`（multipart）→ `{bookId,bookName,total,imported,skippedDuplicate,skippedInvalid,problems}`
-  - 文件内重复、库内重复均跳过并计数；≤5000 行、≤5MB（`MaxUploadSizeExceededException` → 400）
-- 单测 60 → **74**；接口冒烟 12 项通过（含 GBK、重复导入、越权 404）
-- 小程序：新增 `pages/import/import`（选文件 → 预览 → 选去向 → 导入 → 结果），词库页加「导入」入口（`enableFileImport`，本地已开）
-- 页面逻辑冒烟 16 → **17** 项
-
-### 待做
-
-1. 真机验证：微信里把 CSV/xlsx 发到「文件传输助手」→ 小程序选文件 → 导入
-2. 走 PR → 合并 develop → 关 Issue #9
-3. 发布前决定 `enableUserWordbook` / `enableFileImport` 默认值（当前都为 true）
+- 后端：Apache POI 5.2.5 + commons-csv 1.10.0；`SheetParser` 解析 CSV（UTF-8/GBK、逗号/分号/Tab、可选表头）与 xlsx
+- 接口：`POST /api/imports/preview`、`POST /api/imports?bookId=|newBookName=`
+- 缺单词/释义跳过并给行号原因；文件内与库内重复计数；≤5000 行 / ≤5MB
+- 小程序：`pages/import`（选文件 → 预览 → 选去向 → 导入 → 结果），词库页「导入」入口
+- 单测 74、接口冒烟 12 项、页面逻辑冒烟 17 项；真机验证通过，Issue #9 已关闭
 
 ### 环境
 
