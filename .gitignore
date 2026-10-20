@@ -60,3 +60,7 @@ llm-secret.yml
 
 # ---- Generated data (examples, audio cache) ----
 backend/data/
+
+# ---- Local Aliyun TTS config ----
+tts-secret.yml
+**/tts-secret.yml
