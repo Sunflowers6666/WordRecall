@@ -145,9 +145,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\setup\windows\verify
 ## 6. 微信开发者工具与缓存
 
 - 工具版本：2.02.2608080，安装目录 `E:\Develop\wxDevelop\微信web开发者工具`。
-- 用户数据/缓存默认在：`%LOCALAPPDATA%\微信开发者工具\User Data`，当前约 **248.8 MB**。
+- 用户数据/缓存默认在：`%LOCALAPPDATA%\微信开发者工具\User Data`。
 - 工具本身没有提供修改缓存目录的官方设置项；直接搬走目录可能导致工具异常。
-- 可选的非官方方案（**未执行**）：关闭工具 → 把 `User Data` 移到 E 盘 → 在原位置建立目录联接（junction），工具仍按原路径访问。脚本：`scripts\setup\windows\move-wechat-devtools-data.ps1`（默认只打印计划；`-Execute` 执行，`-Rollback` 回滚；执行前必须关闭工具）。
+- **已执行（2026-10-20）**：`User Data` 已迁移到 `E:\Develop\WeChatDevTools\User Data`（248.8 MB / 2148 files）；原路径现在是 Junction，指向 E 盘。工具当时未运行；待打开工具确认登录态和项目列表正常。
+- 回滚：关闭工具后运行 `scripts\setup\windows\move-wechat-devtools-data.ps1 -Rollback`。
 - 项目代码、编译产物都在 `E:\Develop\Projects\WordRecall`，不在 C 盘。
 
 ## 7. C 盘占用风险清单（安装后）
@@ -157,7 +158,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\setup\windows\verify
 | `%USERPROFILE%\.m2\repository` | 0（已指向 E） | 已处理 | `settings.xml` 指向 `E:\Develop\Maven\repository` |
 | `%LOCALAPPDATA%\JetBrains` | 约 895 MB | 暂不迁移 | 需要时用 `idea.properties` 指向 E，迁移前关闭 IDEA 并备份 |
 | `%APPDATA%\JetBrains` | 约 34 MB | 暂不迁移 | 随 config path 一起迁移 |
-| `%LOCALAPPDATA%\微信开发者工具` | 约 249 MB | 可选 | 需要时用 junction 方案；当前不执行 |
+| `%LOCALAPPDATA%\微信开发者工具` | 0（Junction） | 已迁移 | User Data 在 `E:\Develop\WeChatDevTools\User Data`，约 249 MB |
 | `%LOCALAPPDATA%\Tencent` | 约 632 MB | 不动 | 微信聊天数据，与本项目无关 |
 | `%LOCALAPPDATA%\Temp` | 约 4.4 GB | 可选清理 | 用 Windows 磁盘清理；不改系统 TEMP/TMP |
 | `%USERPROFILE%\.m2\wrapper` | 首次运行后约 10 MB | 保留 | 体积小，可接受 |
@@ -166,6 +167,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\setup\windows\verify
 ## 8. 待办
 
 - [x] 配置 Git 提交身份：`Sunflowers6666 <307085798+Sunflowers6666@users.noreply.github.com>`
+- [x] 微信开发者工具 `User Data` 迁移到 E 盘（junction；待打开工具确认）
 - [ ] `gh auth login` 登录 GitHub。
 - [ ] 创建 GitHub 仓库 `WordRecall`（public）。
 - [ ] 阶段 1：Spring Boot 骨架、MySQL 表结构、词库导入、WxJava + JWT 登录。
