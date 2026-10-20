@@ -23,8 +23,8 @@
 
 | 项目 | 说明 |
 |---|---|
-| 冷启动 | Spring Boot 启动约 8–15 秒；最小实例必须设 **1**，否则首个请求很慢 |
-| 常驻费用 | 0.5 核 / 1G 常驻约每月几十元 |
+| 冷启动 | Spring Boot 启动约 10–20 秒。**最小实例设 0** 最省钱，代价是闲置后第一次请求要等这么久 |
+| 常驻费用 | 实例缩到 0、MySQL 自动暂停时，闲置几乎不产生算力费，只剩少量存储费 |
 | 域名 | 默认域名形如 `https://xxxx.run.tcloudbase.com`，腾讯已备案，可直接配为 request 合法域名 |
 
 ## 2. 创建云托管环境
@@ -72,7 +72,7 @@ mysql -h <外网地址> -P <端口> -u root -p wordapp < E:\Develop\_downloads\w
    - 目标目录：`backend`
    - Dockerfile：`backend/Dockerfile`
 4. 端口：`8080`
-5. 最小实例：`1`；规格 `0.5 核 / 1G`
+5. 最小实例：**0**（省钱；闲置后首次请求等 10–20 秒）；规格 `0.5 核 / 1G`
 6. 环境变量（面板里填，不要提交仓库）：
 
 ```text
@@ -87,6 +87,10 @@ APP_AUDIO_DIR=/app/data/audio
 ```
 
 7. 健康检查路径 `/api/health`，发布。
+
+> 后端已内置数据库预热重试（`DatabaseWarmup`）：启动时执行 `SELECT 1`，失败会重试最多 20 次（约 30 秒），
+> 避免 MySQL「自动暂停」恢复瞬间返回 `CynosDB serverless instance is resuming` 导致第一个用户 500。
+> 因此 **MySQL 可以放心开着自动暂停**。
 
 ## 5. 域名与小程序
 
@@ -114,3 +118,4 @@ release: 'https://xxxx.run.tcloudbase.com'
 - [ ] 真机（不开调试）能登录、日历、学习、发音
 - [ ] 云托管日志无 ERROR
 - [ ] 云托管 MySQL 自动备份已开启
+- [ ] 闲置 10 分钟后再打开小程序：第一次会等 10–20 秒（冷启动 + MySQL 唤醒），属正常；之后恢复秒开
