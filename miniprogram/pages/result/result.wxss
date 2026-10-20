@@ -19,7 +19,7 @@
 }
 
 .result-number.is-warn {
-  color: var(--c-accent);
+  color: var(--c-accent-strong);
 }
 
 .result-label {

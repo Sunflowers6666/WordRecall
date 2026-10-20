@@ -1,20 +1,21 @@
-/* 设计令牌 v2：蓝白（百词斩风）+ 厚按钮与硬阴影（多邻国风）。
-   见 docs/ui-preview-v2.html 方案 B + A 混搭。页面与组件只引用变量。 */
+/* 设计令牌 v2：多邻国式亮绿 + 厚按钮与硬阴影（docs/ui-preview-v2.html 方案 A）。 */
 page {
-  --c-bg-page: #F5F7FA;
+  --c-bg-page: #F7F7F7;
   --c-bg-card: #FFFFFF;
-  --c-bg-subtle: #EDF2F9;
-  --c-brand: #2B7FFF;
-  --c-brand-strong: #1A6AE0;
-  --c-brand-tint: #E9F1FF;
-  --c-text: #1F2937;
-  --c-text-2: #4B5563;
-  --c-text-3: #6B7280;
-  --c-text-disabled: #A8B0BC;
-  --c-line: #E3EAF3;
-  --c-accent: #FF9F1C;
-  --c-danger: #F5483B;
-  --c-success: #16A34A;
+  --c-bg-subtle: #EEEEEE;
+  --c-brand: #58CC02;
+  --c-brand-strong: #46A302;
+  --c-brand-tint: #E8F8D8;
+  --c-text: #3C3C3C;
+  --c-text-2: #5C5C5C;
+  --c-text-3: #767676;
+  --c-text-disabled: #AFAFAF;
+  --c-line: #E5E5E5;
+  --c-accent: #FFC800;
+  --c-accent-strong: #C77E00;
+  --c-danger: #FF4B4B;
+  --c-danger-strong: #D32F2F;
+  --c-success: #46A302;
 
   --s-1: 8rpx;
   --s-2: 16rpx;
@@ -28,8 +29,8 @@ page {
   --r-btn: 24rpx;
   --r-chip: 999rpx;
   --r-modal: 32rpx;
-  --sh-card: 0 4rpx 0 #E3EAF3;
-  --sh-float: 0 12rpx 32rpx rgba(31, 41, 55, 0.10);
+  --sh-card: 0 4rpx 0 #E5E5E5;
+  --sh-float: 0 12rpx 32rpx rgba(60, 60, 60, 0.12);
   --btn-depth: 6rpx;
 
   background-color: var(--c-bg-page);
@@ -72,7 +73,7 @@ page {
 .t-sub { font-size: 28rpx; color: var(--c-text-3); }
 .t-caption { font-size: 24rpx; color: var(--c-text-3); }
 .t-num { font-variant-numeric: tabular-nums; }
-.t-danger { color: var(--c-danger); }
+.t-danger { color: var(--c-danger-strong); }
 
 /* 按钮：view 实现，底部加厚边模拟实体按键 */
 .btn {

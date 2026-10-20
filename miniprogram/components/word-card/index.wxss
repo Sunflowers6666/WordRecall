@@ -11,7 +11,7 @@
 }
 
 .word-card-wrong {
-  border: 3rpx solid var(--c-accent, #FF9F1C);
+  border: 3rpx solid var(--c-danger, #FF4B4B);
 }
 
 .wrong-badge {
@@ -20,7 +20,7 @@
   right: var(--s-3, 24rpx);
   padding: 4rpx 16rpx;
   border-radius: var(--r-chip, 999rpx);
-  background: var(--c-accent, #FF9F1C);
+  background: var(--c-danger, #FF4B4B);
   color: #FFFFFF;
   font-size: 24rpx;
   font-weight: 700;
@@ -39,20 +39,20 @@
 .phonetic {
   margin-top: var(--s-2, 16rpx);
   font-size: 28rpx;
-  color: var(--c-text-3, #6B7280);
+  color: var(--c-text-3, #767676);
   text-align: center;
 }
 
 .card-divider {
   height: 2rpx;
-  background: var(--c-line, #E3EAF3);
+  background: var(--c-line, #E5E5E5);
   margin: var(--s-5, 40rpx) 0 var(--s-4, 32rpx);
 }
 
 .meaning {
   font-size: 32rpx;
   line-height: 1.6;
-  color: var(--c-text-2, #4B5563);
+  color: var(--c-text-2, #5C5C5C);
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -63,35 +63,35 @@
 
 .example-label {
   font-size: 24rpx;
-  color: var(--c-text-3, #6B7280);
+  color: var(--c-text-3, #767676);
   margin-bottom: var(--s-1, 8rpx);
 }
 
 .example-en {
   font-size: 32rpx;
   line-height: 1.6;
-  color: var(--c-text-2, #4B5563);
+  color: var(--c-text-2, #5C5C5C);
 }
 
 .example-cn {
   margin-top: var(--s-1, 8rpx);
   font-size: 28rpx;
   line-height: 1.6;
-  color: var(--c-text-3, #6B7280);
+  color: var(--c-text-3, #767676);
 }
 
 .example-empty {
   margin-top: var(--s-1, 8rpx);
   font-size: 24rpx;
-  color: var(--c-text-3, #6B7280);
+  color: var(--c-text-3, #767676);
 }
 
 .reveal-box {
   flex: 1;
   min-height: 240rpx;
   border-radius: 20rpx;
-  background: var(--c-bg-subtle, #EDF2F9);
-  color: var(--c-text-3, #6B7280);
+  background: var(--c-bg-subtle, #EEEEEE);
+  color: var(--c-text-3, #767676);
   font-size: 28rpx;
   font-weight: 600;
   display: flex;

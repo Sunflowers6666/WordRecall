@@ -57,11 +57,11 @@
 }
 
 .stat-streak {
-  color: var(--c-accent);
+  color: var(--c-accent-strong);
 }
 
 .stat-wrong {
-  color: var(--c-danger);
+  color: var(--c-danger-strong);
 }
 
 .stat-label {
