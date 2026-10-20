@@ -19,7 +19,10 @@
       <block wx:if="{{canCreate}}">
         <view class="section-head">
           <view class="section-title">我的词库</view>
-          <view class="create-btn" bindtap="onCreate">+ 新建</view>
+          <view class="head-actions">
+            <view wx:if="{{canImport}}" class="create-btn" bindtap="onImport">导入</view>
+            <view class="create-btn" bindtap="onCreate">+ 新建</view>
+          </view>
         </view>
 
         <view wx:if="{{mine.length}}" class="card list">

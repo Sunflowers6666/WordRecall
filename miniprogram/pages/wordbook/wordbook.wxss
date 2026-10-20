@@ -48,3 +48,8 @@
   padding: 40rpx 32rpx;
   gap: 6rpx;
 }
+
+.head-actions {
+  display: flex;
+  align-items: center;
+}
