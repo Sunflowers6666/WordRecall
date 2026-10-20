@@ -11,21 +11,13 @@
 | 镜像构建需要 Docker | 本机未安装 Docker；走 GitHub 构建则不需要本地 Docker |
 | 音频 138MB 在 `backend/data/` 且被 gitignore | GitHub 构建的镜像里**不会**有音频 → 发音全部 404 |
 
-所以云托管有两条可行路线：
+### 已采用：GitHub 构建 + 音频随仓库
 
-### 路线 1：GitHub 构建 + 音频提交进仓库（改动最小）
-- 把 `backend/data/audio/**` 提交到 Git（仓库增加约 138MB）
-- 云托管绑定 GitHub 仓库，按 `backend/Dockerfile` 构建（`COPY data/audio` 能拿到文件）
-- 不需要本地 Docker、不需要对象存储、不改后端代码
+- `backend/data/audio/**` 已提交（commit `7ce99e4`，14296 个 mp3）
+- `backend/Dockerfile` 为**多阶段构建**：云端用 Maven 编译，再打运行镜像；不依赖本地 `target/`
+- 云托管绑定 GitHub 仓库后按 `backend/Dockerfile` 构建即可，无需本地 Docker
 
-### 路线 2：GitHub 构建 + 音频放对象存储（仓库干净，改动大）
-- 音频上传到云托管对象存储 / COS
-- `AudioService` 改成 302 跳转或代理
-- 需要额外配置存储桶与访问凭据
-
-### 路线 3（不在云托管）：轻量云服务器
-- 不用 Docker、不改仓库、音频直接放服务器
-- 约 ¥60–100/年，比云托管常驻便宜
+备选（若以后仓库太大想瘦身）：音频移到对象存储 + `AudioService` 跳转；或改用轻量服务器。
 
 ## 1. 其他成本与限制
 
