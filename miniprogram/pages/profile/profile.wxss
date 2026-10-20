@@ -6,22 +6,24 @@
 }
 
 .avatar {
-  width: 120rpx;
-  height: 120rpx;
+  width: 136rpx;
+  height: 136rpx;
   border-radius: 50%;
   background: var(--c-brand-tint);
   color: var(--c-brand);
-  font-size: 48rpx;
+  font-size: 52rpx;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 4rpx solid #FFFFFF;
+  box-shadow: 0 0 0 3rpx var(--c-brand-tint);
 }
 
 .profile-name {
   margin-top: 24rpx;
   font-size: 40rpx;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .profile-hint {
@@ -32,6 +34,40 @@
   margin-top: 32rpx;
   width: 320rpx;
   height: 88rpx;
+}
+
+.stats-card {
+  margin-top: 24rpx;
+  display: flex;
+  padding: 28rpx 8rpx;
+}
+
+.stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-num {
+  font-size: 44rpx;
+  font-weight: 800;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-streak {
+  color: var(--c-accent-strong);
+}
+
+.stat-wrong {
+  color: var(--c-danger-strong);
+}
+
+.stat-label {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--c-text-3);
 }
 
 .profile-list {

@@ -1,4 +1,6 @@
-/** 单词卡：学习/复习页共用，见 UI 规范 §4.5。 */
+/** 单词卡：学习/复习页共用，见 UI 规范 §4.5；带发音按钮。 */
+const config = require('../../config/index')
+
 Component({
   options: {
     styleIsolation: 'apply-shared'
@@ -13,9 +15,41 @@ Component({
     showReveal: { type: Boolean, value: false }
   },
 
+  data: {
+    playing: false
+  },
+
+  lifetimes: {
+    detached() {
+      if (this.audio) {
+        this.audio.destroy()
+        this.audio = null
+      }
+    }
+  },
+
   methods: {
     onReveal() {
       this.triggerEvent('reveal')
+    },
+
+    onPlay() {
+      const word = this.data.word
+      if (!word || !word.id) {
+        return
+      }
+      if (!this.audio) {
+        this.audio = wx.createInnerAudioContext()
+        this.audio.onEnded(() => this.setData({ playing: false }))
+        this.audio.onError(() => {
+          this.setData({ playing: false })
+          wx.showToast({ title: '发音加载失败', icon: 'none' })
+        })
+      }
+      this.audio.stop()
+      this.audio.src = config.baseUrl + '/api/words/' + word.id + '/audio?accent=us'
+      this.audio.play()
+      this.setData({ playing: true })
     }
   }
 })

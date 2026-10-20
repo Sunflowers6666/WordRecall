@@ -29,6 +29,9 @@ mybatis-plus:
 app:
   jwt:
     expire-days: 7
+  audio:
+    # 预生成的单词发音（scripts/dict/generate_audio.py 输出）
+    dir: ${APP_AUDIO_DIR:data/audio}
 
 logging:
   level:

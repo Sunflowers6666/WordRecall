@@ -121,6 +121,7 @@ node scripts\logic-test.js    :: 页面逻辑冒烟
 | GET | `/api/calendar?year=&month=` | 月份日历：每天学了多少词、错了几个 |
 | POST | `/api/study/sessions` | 预览一批未学单词（不写记录） |
 | POST | `/api/study/records` | 上报翻过的单词，写入当天学习记录 |
+| GET | `/api/words/{id}/audio?accent=us` | 单词发音（离线预生成的 mp3，公开访问、缓存 7 天） |
 | GET | `/api/review?date=` | 某天首次学过的单词 |
 | POST | `/api/review/submit` | 提交某天错词，回写 `is_wrong` |
 

@@ -44,6 +44,21 @@ class StudyServiceTest {
             new StudyService(userService, wordService, wordMapper, learningRecordService);
 
     @Test
+    void usesUserBatchSizeWhenRequestSizeIsMissing() {
+        User user = userWithWordbook(10L);
+        user.setBatchSize(30);
+        when(userService.getById(1L)).thenReturn(user);
+        when(learningRecordService.findLearnedWordIds(1L, 10L)).thenReturn(Set.of());
+        when(wordMapper.selectList(any())).thenReturn(manyWords(40));
+        when(wordService.count(any())).thenReturn(100L);
+        when(learningRecordService.countByUserAndDate(1L, DAY)).thenReturn(0L);
+
+        StudyDto batch = studyService.startSession(1L, null, DAY);
+
+        assertThat(batch.words()).hasSize(30);
+    }
+
+    @Test
     void previewsOnlyUnlearnedWordsCappedAtRequestedSize() {
         when(userService.getById(1L)).thenReturn(userWithWordbook(10L));
         when(learningRecordService.findLearnedWordIds(1L, 10L)).thenReturn(Set.of(1L));
@@ -146,7 +161,16 @@ class StudyServiceTest {
         User user = new User();
         user.setId(1L);
         user.setCurrentWordbookId(wordbookId);
+        user.setBatchSize(20);
         return user;
+    }
+
+    private static List<Word> manyWords(int count) {
+        List<Word> words = new java.util.ArrayList<>();
+        for (long id = 1; id <= count; id++) {
+            words.add(word(id, 10L));
+        }
+        return words;
     }
 
     private static Word word(Long id, Long wordbookId) {

@@ -56,8 +56,9 @@ const routes = {
   '/api/study/records': () => ({ recorded: 1, todayWordCount: 3 }),
   '/api/review': () => ({ date: todayIso, words: words }),
   '/api/review/submit': () => ({ date: todayIso, total: 2, wrong: 1 }),
-  '/api/users/me': () => ({ id: 1, nickname: '小明', avatarUrl: null, currentWordbookId: 1 }),
-  '/api/users/me/wordbook': () => ({ id: 1, nickname: '小明', avatarUrl: null, currentWordbookId: 2 }),
+  '/api/users/me': () => ({ id: 1, nickname: '小明', avatarUrl: null, currentWordbookId: 1, batchSize: 30 }),
+  '/api/users/me/wordbook': () => ({ id: 1, nickname: '小明', avatarUrl: null, currentWordbookId: 2, batchSize: 30 }),
+  '/api/users/me/stats': () => ({ learnedDays: 4, learnedWords: 41, wrongWords: 2, streakDays: 3, todayWords: 5 }),
   '/api/auth/login': () => ({ token: 'fake-token', user: { id: 1, nickname: '小明', avatarUrl: null, currentWordbookId: 1 } })
 }
 
@@ -68,6 +69,7 @@ global.wx = {
   removeStorageSync: (key) => { delete storage[key] },
   showToast: (opts) => calls.toast.push(opts),
   showModal: () => {},
+  showActionSheet: () => {},
   navigateTo: (opts) => calls.navigateTo.push(opts.url),
   redirectTo: (opts) => calls.redirectTo.push(opts.url),
   switchTab: (opts) => calls.switchTab.push(opts.url),
@@ -259,6 +261,19 @@ const dateUtil = require('../utils/date')
   })
 
   const wordbookPage = loadPage('../pages/wordbook/wordbook')
+
+  await checkAsync('我的页展示统计与每批词数', async () => {
+    storage.wr_token = 'fake-token'
+    storage.wr_user = { id: 1, nickname: '小明', batchSize: 30 }
+    const profilePage = loadPage('../pages/profile/profile')
+    profilePage.onShow()
+    await flush()
+    assert.strictEqual(profilePage.data.batchSize, 30)
+    assert.ok(profilePage.data.stats, '应有统计数据')
+    assert.strictEqual(profilePage.data.stats.streakDays, 3)
+    assert.strictEqual(profilePage.data.stats.learnedDays, 4)
+    assert.strictEqual(profilePage.data.wordbookName, 'CET-4')
+  })
 
   await checkAsync('词库页切换后本地选中态更新', async () => {
     wordbookPage.onShow()

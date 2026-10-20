@@ -28,6 +28,7 @@ import java.util.Set;
 public class StudyService {
 
     private static final int MAX_BATCH = 50;
+    private static final int DEFAULT_BATCH = 20;
 
     private final UserService userService;
     private final WordService wordService;
@@ -37,12 +38,16 @@ public class StudyService {
     /**
      * Peek at the next unlearned batch. Records nothing, so opening and leaving the
      * page does not pollute the calendar.
+     *
+     * @param size 为空时使用用户设置的每批词数
      */
-    public StudyDto startSession(Long userId, int size, LocalDate today) {
-        int limit = Math.max(1, Math.min(size, MAX_BATCH));
-
+    public StudyDto startSession(Long userId, Integer size, LocalDate today) {
         User user = userService.getById(userId);
         Long wordbookId = requireCurrentWordbook(user);
+
+        int requested = size != null ? size
+                : (user.getBatchSize() == null ? DEFAULT_BATCH : user.getBatchSize());
+        int limit = Math.max(1, Math.min(requested, MAX_BATCH));
 
         Set<Long> learned = learningRecordService.findLearnedWordIds(userId, wordbookId);
         List<Word> batch = new ArrayList<>(fetchCandidates(userId, wordbookId, limit));

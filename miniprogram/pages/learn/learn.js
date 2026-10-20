@@ -33,7 +33,8 @@ Page({
       const data = await request({
         url: '/api/study/sessions',
         method: 'POST',
-        data: { size: config.batchSize }
+        // 不传 size：由服务端按用户设置的每批词数返回
+        data: {}
       })
       const words = data.words || []
 

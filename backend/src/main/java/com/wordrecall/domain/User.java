@@ -18,6 +18,8 @@ public class User {
     private String nickname;
     private String avatarUrl;
     private Long currentWordbookId;
+    /** 每批新学词数：10 / 20 / 30，默认 20。 */
+    private Integer batchSize;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

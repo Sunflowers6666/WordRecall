@@ -10,7 +10,7 @@
   width: 160rpx;
   height: 160rpx;
   border-radius: 50%;
-  background: var(--c-bg-subtle, #EFF2EF);
+  background: var(--c-bg-subtle, #EEEEEE);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,14 +19,15 @@
 .state-title {
   margin-top: var(--s-4, 32rpx);
   font-size: 32rpx;
-  color: var(--c-text-2, #5B6472);
+  font-weight: 600;
+  color: var(--c-text-2, #5C5C5C);
   text-align: center;
 }
 
 .state-desc {
   margin-top: var(--s-1, 8rpx);
   font-size: 24rpx;
-  color: var(--c-text-3, #6E7783);
+  color: var(--c-text-3, #767676);
   text-align: center;
 }
 
@@ -37,14 +38,14 @@
   height: 88rpx;
 }
 
-/* 骨架屏：静态，无动画（UI 规范 §4.4） */
+/* 骨架屏：静态，无动画 */
 .skeleton {
   width: 100%;
 }
 
 .sk-line {
-  background: var(--c-bg-subtle, #EFF2EF);
-  border-radius: var(--r-chip, 8rpx);
+  background: var(--c-bg-subtle, #EEEEEE);
+  border-radius: 12rpx;
   margin-bottom: var(--s-2, 16rpx);
 }
 

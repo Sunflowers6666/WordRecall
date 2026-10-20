@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>单词日历 · UI 2.0 配色方案对比</title>
+<style>
+  :root { --scale: 1; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 32px 24px 64px;
+    background: #EDEFF2;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #1F2328;
+  }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #6B7280; font-size: 13px; margin-bottom: 28px; }
+  .grid { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+  .panel { width: 340px; }
+  .panel-title { font-size: 14px; font-weight: 700; margin: 0 0 10px; }
+  .panel-title small { font-weight: 400; color: #6B7280; }
+  .screen {
+    border-radius: 36px; padding: 18px 16px 22px; min-height: 700px;
+    border: 1px solid rgba(0,0,0,.06);
+    box-shadow: 0 12px 32px rgba(15,23,42,.10);
+  }
+  .nav { display: flex; justify-content: center; align-items: center; font-size: 13px; font-weight: 600; margin-bottom: 12px; opacity: .75; }
+  .month { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 6px 0 12px; font-size: 19px; font-weight: 800; }
+  .month .caret { opacity: .45; font-size: 16px; }
+  .week { display: flex; font-size: 10px; opacity: .5; margin-bottom: 4px; }
+  .week div { flex: 1; text-align: center; }
+  .days { display: flex; flex-wrap: wrap; }
+  .day { width: 14.2857%; height: 38px; display: flex; align-items: center; justify-content: center; position: relative; font-size: 13px; font-weight: 600; }
+  .day.pad { color: transparent; }
+  .day.future { opacity: .32; }
+  .day .n { width: 30px; height: 30px; line-height: 30px; text-align: center; border-radius: 50%; }
+  .day.today .n { box-shadow: inset 0 0 0 1.5px var(--c-primary); }
+  .day.sel .n { background: var(--c-primary); color: #fff; }
+  .day .dot { position: absolute; bottom: 2px; left: 50%; margin-left: -2px; width: 4px; height: 4px; border-radius: 50%; background: var(--c-primary); }
+  .day.sel .dot { background: #fff; }
+  .card { background: var(--c-card); border-radius: var(--r-card); padding: 14px; margin-top: 12px; box-shadow: var(--sh-card); }
+  .summary-date { font-size: 15px; font-weight: 700; }
+  .summary-meta { font-size: 11px; color: var(--c-text-2); margin-top: 3px; }
+  .btn { height: 40px; border-radius: var(--r-btn); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; margin-top: 10px; }
+  .btn-primary { background: var(--c-primary); color: #fff; border-bottom: var(--btn-depth) solid var(--c-primary-press); }
+  .btn-secondary { background: var(--c-card); color: var(--c-primary); border: 1px solid var(--c-line); }
+  .bar { height: 6px; border-radius: 3px; background: var(--c-subtle); overflow: hidden; margin: 12px 0 10px; }
+  .bar > i { display: block; height: 100%; width: 45%; background: var(--c-primary); border-radius: 3px; }
+  .word { font-family: Georgia, "Times New Roman", "Songti SC", serif; font-size: 40px; font-weight: 700; text-align: center; margin: 6px 0 2px; }
+  .phon { text-align: center; font-size: 12px; color: var(--c-text-3); }
+  .rule { height: 1px; background: var(--c-line); margin: 14px 0 10px; }
+  .meaning { font-size: 14px; color: var(--c-text-2); line-height: 1.65; }
+  .ex-label { font-size: 10px; color: var(--c-text-3); margin-top: 12px; }
+  .ex { font-size: 13px; color: var(--c-text-2); line-height: 1.6; }
+  .ex-cn { font-size: 12px; color: var(--c-text-3); margin-top: 2px; }
+  .chips { display: flex; gap: 8px; margin-top: 10px; }
+  .chip { font-size: 11px; padding: 5px 10px; border-radius: 999px; background: var(--c-tint); color: var(--c-primary); font-weight: 700; }
+  .row { display: flex; gap: 8px; margin-top: 10px; }
+  .row .btn { flex: 1; margin-top: 0; }
+  .audio { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+  .audio span { font-size: 11px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--c-line); color: var(--c-text-2); }
+  .tokens { margin-top: 10px; font-size: 11px; color: #6B7280; line-height: 1.7; }
+  .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 4px; }
+
+  /* A 多邻国风 */
+  .a .screen { background: #F7F7F7; --c-card:#fff; --c-primary:#58CC02; --c-primary-press:#46A302; --c-accent:#FFC800;
+    --c-text-2:#777; --c-text-3:#999; --c-line:#E5E5E5; --c-subtle:#EEE; --c-tint:#E8F8D8;
+    --r-card:16px; --r-btn:12px; --sh-card:0 2px 0 #E5E5E5; --btn-depth:4px; }
+  /* B 百词斩风 */
+  .b .screen { background: #F5F7FA; --c-card:#fff; --c-primary:#2B7FFF; --c-primary-press:#1A6AE0; --c-accent:#FF9F1C;
+    --c-text-2:#5B6472; --c-text-3:#93A0B2; --c-line:#E8EDF3; --c-subtle:#EDF2F9; --c-tint:#E9F1FF;
+    --r-card:18px; --r-btn:14px; --sh-card:0 6px 20px rgba(31,41,55,.06); --btn-depth:0px; }
+  /* C 奶油青绿 */
+  .c .screen { background: #FAF8F3; --c-card:#fff; --c-primary:#2C6E5B; --c-primary-press:#245A4B; --c-accent:#E9A23B;
+    --c-text-2:#5B6472; --c-text-3:#8C948F; --c-line:#ECE8DF; --c-subtle:#F1EEE7; --c-tint:#E7F0EC;
+    --r-card:18px; --r-btn:14px; --sh-card:0 6px 18px rgba(60,52,36,.07); --btn-depth:0px; }
+  .a .btn-secondary { border-width: 2px; }
+</style>
+</head>
+<body>
+  <h1>单词日历 · UI 2.0 配色方案</h1>
+  <div class="sub">同一套布局与组件，三种皮肤。看完告诉我编号（A / B / C），也可以混搭，比如「B 的颜色 + A 的圆润按钮」。</div>
+
+  <div class="grid">
+
+    <div class="panel a">
+      <p class="panel-title">A · 多邻国风 <small>亮绿 + 厚实按钮 + 卡片硬阴影</small></p>
+      <div class="screen">
+        <div class="nav">单词日历</div>
+        <div class="month"><span class="caret">‹</span> 2026年10月 <span class="caret">›</span></div>
+        <div class="week"><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div></div>
+        <div class="days">
+          <div class="day pad">·</div><div class="day pad">·</div>
+          <div class="day"><span class="n">1</span></div><div class="day"><span class="n">2</span></div>
+          <div class="day"><span class="n">3</span><span class="dot"></span></div><div class="day"><span class="n">4</span></div><div class="day"><span class="n">5</span></div>
+          <div class="day"><span class="n">6</span><span class="dot"></span></div><div class="day"><span class="n">7</span></div>
+          <div class="day"><span class="n">8</span><span class="dot"></span></div><div class="day"><span class="n">9</span></div>
+          <div class="day"><span class="n">10</span></div><div class="day"><span class="n">11</span></div><div class="day"><span class="n">12</span></div>
+          <div class="day"><span class="n">13</span></div><div class="day"><span class="n">14</span></div>
+          <div class="day"><span class="n">15</span></div><div class="day"><span class="n">16</span></div>
+          <div class="day sel"><span class="n">17</span><span class="dot"></span></div>
+          <div class="day today"><span class="n">18</span></div><div class="day"><span class="n">19</span></div>
+          <div class="day future"><span class="n">20</span></div><div class="day future"><span class="n">21</span></div>
+          <div class="day future"><span class="n">22</span></div><div class="day future"><span class="n">23</span></div>
+          <div class="day future"><span class="n">24</span></div><div class="day future"><span class="n">25</span></div>
+          <div class="day future"><span class="n">26</span></div>
+        </div>
+        <div class="card">
+          <div class="summary-date">10月17日 周六</div>
+          <div class="summary-meta">学了 20 个单词 · 错 3 个</div>
+          <div class="btn btn-secondary">复习这天的单词</div>
+        </div>
+        <div class="chips">
+          <span class="chip">CET-4</span><span class="chip">连续 6 天</span>
+        </div>
+        <div class="card">
+          <div class="word">abandon</div>
+          <div class="phon">/əˈbændən/</div>
+          <div class="audio"><span>🔊 美</span><span>🔊 英</span></div>
+          <div class="rule"></div>
+          <div class="meaning">v. 放弃；抛弃</div>
+          <div class="ex-label">例句</div>
+          <div class="ex">They had to abandon the plan.</div>
+          <div class="ex-cn">他们不得不放弃这个计划。</div>
+          <div class="bar"><i></i></div>
+          <div class="row"><div class="btn btn-secondary">没记住</div><div class="btn btn-primary">记住了</div></div>
+        </div>
+        <div class="tokens">
+          <span class="swatch" style="background:#58CC02"></span>#58CC02 主色 ·
+          <span class="swatch" style="background:#FFC800"></span>#FFC800 强调 ·
+          <span class="swatch" style="background:#F7F7F7;border:1px solid #DDD"></span>#F7F7F7 背景
+        </div>
+      </div>
+    </div>
+
+    <div class="panel b">
+      <p class="panel-title">B · 百词斩风 <small>蓝白 + 橙色点缀 + 柔和投影</small></p>
+      <div class="screen">
+        <div class="nav">单词日历</div>
+        <div class="month"><span class="caret">‹</span> 2026年10月 <span class="caret">›</span></div>
+        <div class="week"><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div></div>
+        <div class="days">
+          <div class="day pad">·</div><div class="day pad">·</div>
+          <div class="day"><span class="n">1</span></div><div class="day"><span class="n">2</span></div>
+          <div class="day"><span class="n">3</span><span class="dot"></span></div><div class="day"><span class="n">4</span></div><div class="day"><span class="n">5</span></div>
+          <div class="day"><span class="n">6</span><span class="dot"></span></div><div class="day"><span class="n">7</span></div>
+          <div class="day"><span class="n">8</span><span class="dot"></span></div><div class="day"><span class="n">9</span></div>
+          <div class="day"><span class="n">10</span></div><div class="day"><span class="n">11</span></div><div class="day"><span class="n">12</span></div>
+          <div class="day"><span class="n">13</span></div><div class="day"><span class="n">14</span></div>
+          <div class="day"><span class="n">15</span></div><div class="day"><span class="n">16</span></div>
+          <div class="day sel"><span class="n">17</span><span class="dot"></span></div>
+          <div class="day today"><span class="n">18</span></div><div class="day"><span class="n">19</span></div>
+          <div class="day future"><span class="n">20</span></div><div class="day future"><span class="n">21</span></div>
+          <div class="day future"><span class="n">22</span></div><div class="day future"><span class="n">23</span></div>
+          <div class="day future"><span class="n">24</span></div><div class="day future"><span class="n">25</span></div>
+          <div class="day future"><span class="n">26</span></div>
+        </div>
+        <div class="card">
+          <div class="summary-date">10月17日 周六</div>
+          <div class="summary-meta">学了 20 个单词 · 错 3 个</div>
+          <div class="btn btn-secondary">复习这天的单词</div>
+        </div>
+        <div class="chips">
+          <span class="chip">CET-4</span><span class="chip">连续 6 天</span>
+        </div>
+        <div class="card">
+          <div class="word">abandon</div>
+          <div class="phon">/əˈbændən/</div>
+          <div class="audio"><span>🔊 美</span><span>🔊 英</span></div>
+          <div class="rule"></div>
+          <div class="meaning">v. 放弃；抛弃</div>
+          <div class="ex-label">例句</div>
+          <div class="ex">They had to abandon the plan.</div>
+          <div class="ex-cn">他们不得不放弃这个计划。</div>
+          <div class="bar"><i></i></div>
+          <div class="row"><div class="btn btn-secondary">没记住</div><div class="btn btn-primary">记住了</div></div>
+        </div>
+        <div class="tokens">
+          <span class="swatch" style="background:#2B7FFF"></span>#2B7FFF 主色 ·
+          <span class="swatch" style="background:#FF9F1C"></span>#FF9F1C 强调 ·
+          <span class="swatch" style="background:#F5F7FA;border:1px solid #DDD"></span>#F5F7FA 背景
+        </div>
+      </div>
+    </div>
+
+    <div class="panel c">
+      <p class="panel-title">C · 奶油青绿 <small>保留现在的主色，改暖底 + 更大圆角</small></p>
+      <div class="screen">
+        <div class="nav">单词日历</div>
+        <div class="month"><span class="caret">‹</span> 2026年10月 <span class="caret">›</span></div>
+        <div class="week"><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div></div>
+        <div class="days">
+          <div class="day pad">·</div><div class="day pad">·</div>
+          <div class="day"><span class="n">1</span></div><div class="day"><span class="n">2</span></div>
+          <div class="day"><span class="n">3</span><span class="dot"></span></div><div class="day"><span class="n">4</span></div><div class="day"><span class="n">5</span></div>
+          <div class="day"><span class="n">6</span><span class="dot"></span></div><div class="day"><span class="n">7</span></div>
+          <div class="day"><span class="n">8</span><span class="dot"></span></div><div class="day"><span class="n">9</span></div>
+          <div class="day"><span class="n">10</span></div><div class="day"><span class="n">11</span></div><div class="day"><span class="n">12</span></div>
+          <div class="day"><span class="n">13</span></div><div class="day"><span class="n">14</span></div>
+          <div class="day"><span class="n">15</span></div><div class="day"><span class="n">16</span></div>
+          <div class="day sel"><span class="n">17</span><span class="dot"></span></div>
+          <div class="day today"><span class="n">18</span></div><div class="day"><span class="n">19</span></div>
+          <div class="day future"><span class="n">20</span></div><div class="day future"><span class="n">21</span></div>
+          <div class="day future"><span class="n">22</span></div><div class="day future"><span class="n">23</span></div>
+          <div class="day future"><span class="n">24</span></div><div class="day future"><span class="n">25</span></div>
+          <div class="day future"><span class="n">26</span></div>
+        </div>
+        <div class="card">
+          <div class="summary-date">10月17日 周六</div>
+          <div class="summary-meta">学了 20 个单词 · 错 3 个</div>
+          <div class="btn btn-secondary">复习这天的单词</div>
+        </div>
+        <div class="chips">
+          <span class="chip">CET-4</span><span class="chip">连续 6 天</span>
+        </div>
+        <div class="card">
+          <div class="word">abandon</div>
+          <div class="phon">/əˈbændən/</div>
+          <div class="audio"><span>🔊 美</span><span>🔊 英</span></div>
+          <div class="rule"></div>
+          <div class="meaning">v. 放弃；抛弃</div>
+          <div class="ex-label">例句</div>
+          <div class="ex">They had to abandon the plan.</div>
+          <div class="ex-cn">他们不得不放弃这个计划。</div>
+          <div class="bar"><i></i></div>
+          <div class="row"><div class="btn btn-secondary">没记住</div><div class="btn btn-primary">记住了</div></div>
+        </div>
+        <div class="tokens">
+          <span class="swatch" style="background:#2C6E5B"></span>#2C6E5B 主色 ·
+          <span class="swatch" style="background:#E9A23B"></span>#E9A23B 强调 ·
+          <span class="swatch" style="background:#FAF8F3;border:1px solid #DDD"></span>#FAF8F3 背景
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

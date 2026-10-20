@@ -12,10 +12,15 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    /** 允许的每批新学词数。 */
+    private static final Set<Integer> BATCH_SIZES = Set.of(10, 20, 30);
 
     private final UserMapper userMapper;
     private final WordbookService wordbookService;
@@ -58,15 +63,35 @@ public class UserService {
     }
 
     /**
-     * Only the changed column is written, so {@code updated_at} still refreshes via the
-     * column's ON UPDATE CURRENT_TIMESTAMP.
+     * 只写真正变化的列，{@code updated_at} 仍由 ON UPDATE CURRENT_TIMESTAMP 刷新。
+     * 昵称与每批词数都可单独更新，但不能两个都不传。
      */
-    public User updateNickname(Long userId, String nickname) {
+    public User updateProfile(Long userId, String nickname, Integer batchSize) {
+        boolean hasNickname = nickname != null;
+        boolean hasBatchSize = batchSize != null;
+        if (!hasNickname && !hasBatchSize) {
+            throw new BizException(ErrorCode.BAD_REQUEST, "没有要更新的内容");
+        }
+        if (hasBatchSize && !BATCH_SIZES.contains(batchSize)) {
+            throw new BizException(ErrorCode.BAD_REQUEST, "每批词数只能是 10 / 20 / 30");
+        }
+
         User user = getById(userId);
-        userMapper.update(null, Wrappers.<User>lambdaUpdate()
-                .eq(User::getId, userId)
-                .set(User::getNickname, nickname));
-        user.setNickname(nickname);
+        var update = Wrappers.<User>lambdaUpdate().eq(User::getId, userId);
+        if (hasNickname) {
+            update.set(User::getNickname, nickname);
+        }
+        if (hasBatchSize) {
+            update.set(User::getBatchSize, batchSize);
+        }
+        userMapper.update(null, update);
+
+        if (hasNickname) {
+            user.setNickname(nickname);
+        }
+        if (hasBatchSize) {
+            user.setBatchSize(batchSize);
+        }
         return user;
     }
 

@@ -61,6 +61,24 @@
 - 真实接口验证：预览 5 词 → 0 条记录；上报 1 → 1 条；重复上报 → 0；再报 2 → 3 条；再次预览自动跳过已记录的 3 个
 - 未验证：真机 iOS / Android（需要局域网 IP + 同一网络）
 
+### 阶段 3（进行中，分支 `feature/stage-3-learning`，PR #6）
+
+- 学习统计接口 `GET /api/users/me/stats`：累计天数/词数、错词、连续天数（今天没学时从昨天起算）、今日词数
+- `user.batch_size`（10/20/30，默认 20）+ 迁移脚本 `db/migration-v3-batch-size.sql`；`PATCH /api/users/me` 支持 `{nickname?, batchSize?}`
+- `POST /api/study/sessions` 的 `size` 改为可选，缺省用用户设置
+- 单测 32 → **41 全部通过**；真实接口冒烟 9 项通过
+- **UI 2.0 令牌 v2 已落地**：蓝白 + 厚按钮（`app.wxss`、tabBar、两个组件、全部页面）；「我的」页新增统计卡与每批词数选择；学习页不再传 size
+- 页面逻辑冒烟 12 项通过（新增“我的页统计与每批词数”）
+- **发音（方案 A，Windows SAPI 离线生成）**：`scripts/dict/generate_audio.py` 用系统音色 `Microsoft Zira Desktop` 生成美音 mp3（约 9KB/词），输出 `backend/data/audio/us/<wordId>.mp3`；`GET /api/words/{id}/audio?accent=us` 公开返回，`Cache-Control: max-age=604800`；单词卡加了「🔊 美」按钮
+  - 英音暂缺：本机无 en-GB 语音包；Windows 设置 → 时间和语言 → 语言和区域 → 添加 English (United Kingdom) 语音包后会多出 `Microsoft Hazel Desktop`，重跑脚本加 `--accent uk` 即可
+  - 音频与例句数据都在 `backend/data/`（已 gitignore），换机器需重跑两个脚本
+- 后端单测 41 → **46 全部通过**（新增音频服务 5 个）
+- **例句（DeepSeek 批量生成，已完成）**：`scripts/dict/generate_examples.py` 按词库难度生成英文例句 + 中文翻译（CET-4 ≤8 词 / CET-6 ≤12 / IELTS ≤16），953 次调用约 51 分钟；`import_examples.py` 导入 `word.example_*`（只填空值）
+  - 覆盖率：CET-4 3848/3849（100%）、CET-6 5392/5407（99.7%）、IELTS 5028/5040（99.8%），合计 14268/14296
+  - 未覆盖的 28 个词保持「暂无例句」（生成结果没通过“句子必须包含目标词 + 不超词数”的校验）
+  - 重新生成：删掉 `backend/data/examples/*.jsonl` 或对应行后重跑脚本（可断点续跑）
+- 待做：真机适配；英音（装 en-GB 语音包后 `--accent uk`）
+
 ### 实测数据
 
 ```text
@@ -70,9 +88,11 @@ CET-6 = 5407
 IELTS = 5040
 users = 1
 learning_record = 0（测试数据已清理；真实登录验证时曾写入 40 条）
-backend_tests = 32 passed
+backend_tests = 41 passed
 miniprogram_checks = check.py OK（JSON/JS/WXML 静态检查）
 miniprogram_logic = 11 passed
+audio_us = 14296 个 mp3（138.4 MB，生成 565 秒，0 失败）
+examples = 14268 条入库：CET-4 3848/3849（100%）、CET-6 5392/5407（99.7%）、IELTS 5028/5040（99.8%）
 ```
 
 ### 未完成 / 待用户操作
