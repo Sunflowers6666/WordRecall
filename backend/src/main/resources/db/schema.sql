@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     nickname            VARCHAR(64)     NULL,
     avatar_url          VARCHAR(512)    NULL,
     current_wordbook_id BIGINT UNSIGNED NULL,
+    batch_size          TINYINT UNSIGNED NOT NULL DEFAULT 20,
     created_at          DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),

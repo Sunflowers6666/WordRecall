@@ -30,15 +30,42 @@ class UserServiceTest {
     private final UserService userService = new UserService(userMapper, wordbookService);
 
     @Test
-    void updateNicknameWritesOnlyTheNicknameColumn() {
+    void updateProfileWritesOnlyTheNicknameColumn() {
         when(userMapper.selectById(1L)).thenReturn(existingUser());
         when(userMapper.update(isNull(), any())).thenReturn(1);
 
-        User updated = userService.updateNickname(1L, "小明");
+        User updated = userService.updateProfile(1L, "小明", null);
 
         assertThat(updated.getNickname()).isEqualTo("小明");
         assertThat(updated.getCurrentWordbookId()).isEqualTo(3L);
         verify(userMapper).update(isNull(), any());
+    }
+
+    @Test
+    void updateProfileCanChangeOnlyBatchSize() {
+        when(userMapper.selectById(1L)).thenReturn(existingUser());
+        when(userMapper.update(isNull(), any())).thenReturn(1);
+
+        User updated = userService.updateProfile(1L, null, 30);
+
+        assertThat(updated.getBatchSize()).isEqualTo(30);
+        assertThat(updated.getNickname()).isNull();
+    }
+
+    @Test
+    void updateProfileRejectsEmptyRequest() {
+        assertThatThrownBy(() -> userService.updateProfile(1L, null, null))
+                .isInstanceOfSatisfying(BizException.class,
+                        exception -> assertThat(exception.getCode()).isEqualTo(ErrorCode.BAD_REQUEST));
+        verify(userMapper, never()).update(isNull(), any());
+    }
+
+    @Test
+    void updateProfileRejectsBatchSizeOutsideTenTwentyThirty() {
+        assertThatThrownBy(() -> userService.updateProfile(1L, null, 25))
+                .isInstanceOfSatisfying(BizException.class,
+                        exception -> assertThat(exception.getCode()).isEqualTo(ErrorCode.BAD_REQUEST));
+        verify(userMapper, never()).update(isNull(), any());
     }
 
     @Test
@@ -80,6 +107,7 @@ class UserServiceTest {
         user.setId(1L);
         user.setOpenid("openid-1");
         user.setCurrentWordbookId(3L);
+        user.setBatchSize(20);
         return user;
     }
 }
