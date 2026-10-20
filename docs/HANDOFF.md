@@ -141,6 +141,10 @@ E:\Develop\Maven\apache-maven-3.10.0\bin\mvn.cmd -B test
 :: 启动后端
 E:\Develop\Maven\apache-maven-3.10.0\bin\mvn.cmd -B spring-boot:run
 
+:: 一键脚本（等价，双击即可；8080 占用会提示）
+scripts\setup\windows\start-backend.cmd
+scripts\setup\windows\stop-backend.cmd
+
 :: 健康检查
 curl http://127.0.0.1:8080/api/health
 

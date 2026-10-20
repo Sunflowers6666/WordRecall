@@ -83,6 +83,11 @@ cd backend
 mvnw.cmd spring-boot:run
 ```
 
+或者直接双击（推荐，省得记命令）：
+
+- `scripts\setup\windows\start-backend.cmd`：启动后端，窗口保持打开就是运行中；若 8080 已被占用会提示
+- `scripts\setup\windows\stop-backend.cmd`：停掉占用 8080 的后端进程
+
 健康检查：
 
 ```text
