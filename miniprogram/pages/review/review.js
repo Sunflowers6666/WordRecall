@@ -31,6 +31,7 @@ Page({
 
   async load() {
     this.setData({ state: 'loading' })
+    this.pendingWrongIds = null
     try {
       await ensureLogin()
       const data = await request({ url: '/api/review?date=' + this.data.date })
@@ -88,6 +89,8 @@ Page({
   },
 
   async submit(wrongIds) {
+    // 提交失败重试时只重发提交，不重头复习
+    this.pendingWrongIds = wrongIds
     this.setData({ state: 'submitting' })
     try {
       const result = await request({
@@ -109,6 +112,10 @@ Page({
   },
 
   onRetry() {
+    if (this.pendingWrongIds) {
+      this.submit(this.pendingWrongIds)
+      return
+    }
     this.load()
   }
 })

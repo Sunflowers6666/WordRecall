@@ -58,7 +58,10 @@ Page({
   },
 
   async loadMonth(year, month, keepSelection) {
-    this.setData({ state: 'loading' })
+    // 刷新（返回本页、下拉）时保留旧数据，避免骨架屏闪一下
+    if (!keepSelection) {
+      this.setData({ state: 'loading' })
+    }
     try {
       const data = await request({ url: '/api/calendar?year=' + year + '&month=' + month })
       const days = data.days || []
