@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+
+wx:
+  miniapp:
+    appid: ${WX_MINIAPP_APPID}
+    secret: ${WX_MINIAPP_SECRET}
+    config-storage:
+      type: memory
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+server:
+  forward-headers-strategy: native

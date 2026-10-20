@@ -27,7 +27,7 @@
 | Node.js | 24.15.0 | `E:\Develop\node` | 复用；本项目小程序端不用 npm |
 | IntelliJ IDEA | 2026.2.2 | `E:\Develop\JavaStudy\IDEA2026\IntelliJ IDEA 2026.2.2` | 复用 |
 | VS Code | 1.141.2 | `E:\Develop\Microsoft VS Code` | 复用 |
-| Maven | 不安装系统级 | 项目内 `mvnw` | 阶段 1 由 Spring Initializr 生成 wrapper |
+| Maven | 3.10.0（本地备用） | `E:\Develop\Maven\apache-maven-3.10.0` | 不加入 PATH；项目仍以 `mvnw` 为入口。本机 wrapper 下载卡住时用本地 Maven 构建 |
 | VC++ 运行库 | 已有 | `C:\Windows\System32` | MySQL 运行前提满足 |
 
 > 备注：用户级 PATH 里有 6 条指向旧位置的失效路径（`E:\Python\...`、`E:\JavaStudy\...`、`E:\Microsoft VS Code\bin`），实际安装目录在 `E:\Develop\...`。这不影响本项目，暂不修改；需要清理时单独确认。
@@ -129,6 +129,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\setup\windows\verify
 - 内容：`<localRepository>E:/Develop/Maven/repository</localRepository>`
 - 已创建目录：`E:\Develop\Maven\repository`
 - `mvnw` 首次运行下载的 Maven 分发包仍在 `%USERPROFILE%\.m2\wrapper`（约 10 MB），可接受。
+- 本机 `mvnw.cmd` 下载 Maven 3.10.0 时卡住，已额外解压一份本地 Maven 到 `E:\Develop\Maven\apache-maven-3.10.0` 作为构建备用；不修改 PATH。CI 仍使用仓库内 `mvnw`。
 
 ## 5. GitHub CLI
 
