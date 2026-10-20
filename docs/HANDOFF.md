@@ -1,6 +1,6 @@
 # WordRecall 交接文档
 
-> 更新时间：2026-10-20 17:45（Asia/Shanghai）
+> 更新时间：2026-10-20 18:25（Asia/Shanghai）
 > 新窗口请先读本文件，再读 `README.md` 和 `git log`。本文件不包含任何密码、PAT、AppSecret、JWT 密钥。
 
 ## 1. 项目基本信息
@@ -12,7 +12,7 @@
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
 | GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
-| 当前阶段 | **阶段 2 功能完成并已真实登录验证**；剩真机适配与阶段 3 |
+| 当前阶段 | **阶段 2 已完成并合并到 develop**；下一步真机适配 / 阶段 3 |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -36,25 +36,25 @@
 - `main` 已同步阶段 1 代码（默认分支不再只有阶段 0）
 - Secret scanning 与 Push protection 均为 enabled
 
-### 阶段 2（进行中，分支 `feature/stage-2-miniprogram`，PR #4）
+### 阶段 2（已合并，PR #4 → develop，2026-10-20）
 
 - `docs/stage-2-ui-spec.md`：设计令牌（深青绿 `#2C6E5B` 主色、衬线单词字体、rpx 字号/间距/圆角）、三态规范、6 个页面布局、工程结构、接口契约、验收标准；§11 已记录确认结果
 - 后端 7 个接口：`GET /api/wordbooks`、`PATCH /api/users/me`、`PUT /api/users/me/wordbook`、`GET /api/calendar`、`POST /api/study/sessions`、`GET /api/review`、`POST /api/review/submit`
 - 新增 `LearningRecordService`、`StudyService`、`ReviewService`、`CalendarService` 及对应 DTO/Controller
-- 单元测试 **27 个全部通过**（新增 20 个：日历 3、学习记录 6、新学 3、复习 4、用户 4）
+- 单元测试 **32 个全部通过**（阶段 2 新增 25 个：日历 3、学习记录 6、新学 8、复习 4、用户 4）
 - 真实 MySQL 冒烟 **34 项全部通过**（起真实 jar + JWT，覆盖匿名/登录、两批新学不重复、错词提交与回读、词库切换、401/400/404 边界）
 - 修复：`?date=not-a-date` 这类参数格式错误原先返回 500，`GlobalExceptionHandler` 现在返回 400；同时补 405/415 处理
-- 冒烟用测试用户与学习记录已清理（`users=0`、`learning_record=0`）
+- 冒烟用测试用户与学习记录已清理（`users=1` 为真实账号，`learning_record` 已清空）
 
 ### 阶段 2 小程序端（同分支）
 
-- AppID `wx1a3282cb951d51b8` 已写入 `miniprogram/project.config.json`；`backend/application-secret.yml` 的 `WX_MINIAPP_APPID` 也已填（AppSecret 仍是 `CHANGE_ME`）
+- AppID `wx1a3282cb951d51b8` 已写入 `miniprogram/project.config.json`；`backend/application-secret.yml` 的 `WX_MINIAPP_APPID` / `WX_MINIAPP_SECRET` 均已填，且 AppSecret 已验证被微信接受（假 code 返回 `40029`）
 - 6 个页面：日历首页（tab）、新学、复习、复习结果、我的（tab）、选择词库
 - 2 个组件：`word-card`（学习/复习共用，支持遮罩释义）、`state-view`（加载/空/错误三态）
 - `utils/request.js`：统一 Bearer、15s 超时、错误分 network/auth/server/biz、401 静默重登并重放一次
 - `utils/auth.js`：`ensureLogin()`（并发共用一次 wx.login）；首页与词库可匿名浏览
 - 设计令牌全部落在 `app.wxss` 的 CSS 变量，页面不写死颜色/字号
-- 自检：`python miniprogram/scripts/check.py` 通过（11 JSON / 15 JS / 8 WXML：JSON 解析、node 语法、WXML 标签配对、页面四件套、组件路径、tabBar 引用）
+- 自检：`python miniprogram/scripts/check.py` 通过（JSON 解析、node 语法、WXML 标签配对、页面四件套、组件路径、tabBar 引用）
 - 页面逻辑冒烟：`node miniprogram/scripts/logic-test.js` **11 项通过**（月历网格、今天/未来标记、月份切换与未来月拦截、新学翻页、复习只回传错词、结果页数据、词库切换）
 - 已验证（2026-10-20 17:57，开发者工具）：真实 `wx.login` → `code2Session` → 建用户 → 拉 20 词并写入 `learning_record`；页面渲染、日历回读正常
 - **记录时机改为「翻过才记」（2026-10-20）**：`POST /api/study/sessions` 只预览不写记录；新增 `POST /api/study/records` 由客户端在点「下一个 / 学完了」时逐词上报（幂等，重复上报 `recorded=0`）。避免“点进学习页又退出”留下幽灵记录
@@ -69,7 +69,7 @@ CET-4 = 3849
 CET-6 = 5407
 IELTS = 5040
 users = 1
-learning_record = 40（2026-10-20，真实登录产生）
+learning_record = 0（测试数据已清理；真实登录验证时曾写入 40 条）
 backend_tests = 32 passed
 miniprogram_checks = check.py OK（JSON/JS/WXML 静态检查）
 miniprogram_logic = 11 passed
@@ -77,7 +77,7 @@ miniprogram_logic = 11 passed
 
 ### 未完成 / 待用户操作
 
-- **真实微信登录已通过（2026-10-20 17:57）**：开发者工具里点「开始学习」走真实 `wx.login` → `code2Session` → 建用户（id=2）→ 写入当天 40 条 `learning_record`，日历与词库接口回读正常
+- **真实微信登录已通过（2026-10-20 17:57）**：开发者工具里点「开始学习」走真实 `wx.login` → `code2Session` → 建用户（id=2）→ 写入学习记录，日历与词库接口回读正常。测试数据随后已按你的要求清空（今天从 0 开始）
 - 真机（iOS / Android）未验证：需要把 `miniprogram/config/index.js` 的 develop 地址改成电脑局域网 IP
 - 「小程序代码上传密钥」曾误粘进 `application-secret.yml`，已清理；**需在公众平台重置该上传密钥**（阶段 6 会重新生成）
 - 云服务器未采购
@@ -87,17 +87,17 @@ miniprogram_logic = 11 passed
 
 ```text
 main:                        阶段 1 完成，与 develop 同步（v1.0.0 时打 tag）
-develop:                     97a624c docs: 记录 main 同步阶段 1
-feature/stage-2-miniprogram: 阶段 2 规范 + 7 个接口 + 6 个页面（当前分支，PR #4 ready）
+develop:                     c0119e3 Merge pull request #4（阶段 2 全部内容）
+feature/stage-2-miniprogram: 已合并，远程分支已删除
 feature/stage-1-backend:     已合并，保留
 工作区:                      clean
 远程:                        origin https://github.com/Sunflowers6666/WordRecall.git
-已推送:                      是（main / develop / feature/stage-2-miniprogram）
-Issue:                       #1 CLOSED；#3 OPEN（阶段 2）
-PR:                          #2 MERGED；#4 OPEN（阶段 2，ready for review，CI 见 PR 页面）
+已推送:                      是（main / develop）
+Issue:                       #1 CLOSED；#3 CLOSED（阶段 2）
+PR:                          #2 MERGED；#4 MERGED
 ```
 
-分支策略：`main` 稳定、`develop` 集成、`feature/*` 功能分支；阶段 1 已 PR 到 `develop`。`main` 按计划在阶段 6 统一更新。
+分支策略：`main` 稳定、`develop` 集成、`feature/*` 功能分支；每个阶段 PR 到 `develop` 后删除功能分支。`main` 按计划在阶段 6 统一更新。
 
 ## 4. 本机环境
 
@@ -128,7 +128,7 @@ PR:                          #2 MERGED；#4 OPEN（阶段 2，ready for review�
 - 日期基准：后端用 `LocalDate.now(ZoneId.of("Asia/Shanghai"))` 生成学习日期；客户端按设备本地日期展示
 - 词库来源 **ECDICT（MIT）**；ECDICT 没有例句，`example_sentence` / `example_translation` 为 `null`，UI 显示“暂无例句”
 - 1.0 默认隐藏自建词库和文件导入入口（阶段 4/5 用配置开关，默认 false）
-- 阶段 1 不实现新学/复习 API；阶段 2/3 再做
+- 阶段 1 只做后端骨架；新学/复习接口在阶段 2 实现（记录时机为「翻过才记」）
 
 ## 6. 常用命令
 
@@ -163,7 +163,9 @@ mysql --defaults-extra-file="E:\Develop\MySQL\.secrets\client-root.cnf" -D worda
 默认分支:        main
 阶段 1 Issue:    #1 CLOSED
 阶段 1 PR:       #2 MERGED → develop
-CI:              PR run 39394653123 SUCCESS（30s）；develop push run 39394993025 SUCCESS（17s）
+阶段 2 Issue:    #3 CLOSED
+阶段 2 PR:       #4 MERGED → develop（12 个提交）
+CI:              backend-test + miniprogram-check；PR 与 develop push 均 SUCCESS
 Secret scanning: enabled
 Push protection: enabled
 Dependabot:      disabled（可选，启用前需用户确认）
@@ -173,13 +175,13 @@ Dependabot:      disabled（可选，启用前需用户确认）
 
 如凭据丢失或 `gh auth status` 显示未登录：重新创建一个 Classic PAT（`repo`、`workflow`、`read:org`），保存到 `E:\Develop\_downloads\gh-token.txt`，执行 `gh auth login --with-token < "E:\Develop\_downloads\gh-token.txt"`，然后立即删除文件。**不要把 PAT 发到聊天。**
 
-## 8. 下一步（阶段 2 收尾）
+## 8. 下一步（阶段 3）
 
-1. 微信开发者工具导入 `miniprogram/`，起本地后端（8080），走一遍：日历 → 开始学习（触发真实 `wx.login`）→ 复习 → 结果 → 切换词库 → 改昵称。
-2. 真机调试：把 `miniprogram/config/index.js` 的 develop 地址改成电脑局域网 IP，手机与电脑同一网络。
-3. 重置「小程序代码上传密钥」（误粘过），阶段 6 再正式生成并存入 GitHub Secret。
-4. 云服务器采购、备案、微信后台 request 合法域名配置由用户完成。
-5. 阶段 2 不做用户自建词库/文件导入（阶段 4/5，入口默认关闭）。
+1. 真机调试（可选但建议）：把 `miniprogram/config/index.js` 的 develop 地址改成电脑局域网 IP，手机与电脑同一网络。
+2. 重置「小程序代码上传密钥」（误粘过），阶段 6 再正式生成并存入 GitHub Secret。
+3. 阶段 3 规划（待与用户确认范围）：学习统计（累计学习天数/词数）、每批词数设置、错词本、订阅消息提醒。
+4. 云服务器采购、备案、微信后台 request 合法域名配置由用户完成（阶段 6 前）。
+5. 自建词库/文件导入仍在阶段 4/5，入口默认关闭。
 
 ## 9. 新窗口启动提示（直接复制）
 
