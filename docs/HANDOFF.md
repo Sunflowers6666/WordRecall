@@ -307,6 +307,7 @@ scripts\setup\windows\start-backend.cmd     :: 8080，真机用 172.20.242.224:8
 - 数据：`scripts/offline/generate_words.py` 从 MySQL 导出三个词库 → gzip+base64 → `miniprogram/data/wb{1,2,3}.js`（1.5MB）
 - 解压：`utils/vendor/pako.min.js`（MIT）；本地 API：`utils/offline-api.js`（对齐后端接口语义）
 - 记录模型：`records[wordId] = { first, wrong }`，存 `wr_offline_v1`
-- 关闭：自建词库、导入、发音；保留：日历/学习/复习/结果/统计/错词本/每批词数/清空本机记录
+- 关闭：自建词库、导入；保留：日历/学习/复习/结果/统计/错词本/每批词数/清空本机记录
+- 发音：微信官方「同声传译」插件 `WechatSI`（provider `wx069ba97219f66d99`，版本 0.3.5），需在小程序后台添加插件
 - 包体 1.64MB；逻辑冒烟 19 项（含单机版全流程）
 - 状态：代码完成，待开发者工具与真机验证；确认后可上传体验版（无需域名）
