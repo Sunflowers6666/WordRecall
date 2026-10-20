@@ -44,8 +44,10 @@ const words = [
 
 const routes = {
   '/api/wordbooks': () => [
-    { id: 1, name: 'CET-4', description: null, wordCount: 3849, selected: true },
-    { id: 2, name: 'CET-6', description: null, wordCount: 5407, selected: false }
+    { id: 1, name: 'CET-4', description: null, wordCount: 3849, selected: true, editable: false, source: 'BUILTIN' },
+    { id: 2, name: 'CET-6', description: null, wordCount: 5407, selected: false, editable: false, source: 'BUILTIN' },
+    { id: 3, name: 'IELTS', description: null, wordCount: 5040, selected: false, editable: false, source: 'BUILTIN' },
+    { id: 9, name: '我的词表', description: null, wordCount: 2, selected: false, editable: true, source: 'USER' }
   ],
   '/api/calendar': () => ({
     month: '2026-10',
@@ -60,6 +62,34 @@ const routes = {
   '/api/users/me/wordbook': () => ({ id: 1, nickname: '小明', avatarUrl: null, currentWordbookId: 2, batchSize: 30 }),
   '/api/users/me/stats': () => ({ learnedDays: 4, learnedWords: 41, wrongWords: 2, streakDays: 3, todayWords: 5 }),
   '/api/auth/login': () => ({ token: 'fake-token', user: { id: 1, nickname: '小明', avatarUrl: null, currentWordbookId: 1 } })
+}
+
+const storedUsersBook = { id: 9, name: '我的词表', description: null, wordCount: 2, selected: false, editable: true, source: 'USER' }
+
+/** 带路径参数的路由（自建词库相关）。 */
+function dynamicRoute(pathOnly, method) {
+  let match = pathOnly.match(/^\/api\/wordbooks\/(\d+)\/words$/)
+  if (match) {
+    if (method === 'POST') {
+      return { id: 101, spelling: 'alpha', meaning: '阿尔法', isWrong: false }
+    }
+    return {
+      total: 2,
+      words: [
+        { id: 101, spelling: 'alpha', meaning: '阿尔法', isWrong: false },
+        { id: 102, spelling: 'beta', meaning: '贝塔', isWrong: false }
+      ]
+    }
+  }
+  match = pathOnly.match(/^\/api\/wordbooks\/(\d+)$/)
+  if (match) {
+    return storedUsersBook
+  }
+  match = pathOnly.match(/^\/api\/words\/(\d+)$/)
+  if (match) {
+    return { id: 101, spelling: 'alpha', phonetic: '/ˈælfə/', meaning: '阿尔法', exampleSentence: null, exampleTranslation: null, isWrong: false }
+  }
+  return null
 }
 
 global.wx = {
@@ -81,11 +111,12 @@ global.wx = {
     calls.requests.push({ method: opts.method, path: pathOnly, body: opts.data })
     setTimeout(() => {
       const factory = routes[pathOnly]
-      if (!factory) {
+      const dynamic = factory ? null : dynamicRoute(pathOnly, opts.method)
+      if (!factory && !dynamic) {
         opts.fail({ errMsg: 'no fake route: ' + pathOnly })
         return
       }
-      opts.success({ statusCode: 200, data: { code: 0, message: 'ok', data: factory() } })
+      opts.success({ statusCode: 200, data: { code: 0, message: 'ok', data: factory ? factory() : dynamic } })
     }, 0)
   }
 }
@@ -275,17 +306,60 @@ const dateUtil = require('../utils/date')
     assert.strictEqual(profilePage.data.wordbookName, 'CET-4')
   })
 
-  await checkAsync('词库页切换后本地选中态更新', async () => {
+  await checkAsync('词库页分组：预置 3 个 + 我的 1 个', async () => {
     wordbookPage.onShow()
     await flush()
     assert.strictEqual(wordbookPage.data.state, 'ready')
-    assert.strictEqual(wordbookPage.data.list.length, 2)
+    assert.strictEqual(wordbookPage.data.builtin.length, 3)
+    assert.strictEqual(wordbookPage.data.mine.length, 1)
+    assert.strictEqual(wordbookPage.data.mine[0].name, '我的词表')
+  })
+
+  await checkAsync('切换预置词库更新选中态', async () => {
     storage.wr_token = 'fake-token'
     storage.wr_user = { id: 1, nickname: '小明' }
-    wordbookPage.onPick({ currentTarget: { dataset: { index: 1 } } })
+    await wordbookPage.onPickBuiltin({ currentTarget: { dataset: { index: 1 } } })
     await flush()
-    assert.strictEqual(wordbookPage.data.list[1].selected, true)
-    assert.strictEqual(wordbookPage.data.list[0].selected, false)
+    assert.strictEqual(wordbookPage.data.builtin[1].selected, true)
+    assert.strictEqual(wordbookPage.data.builtin[0].selected, false)
+  })
+
+  const detailPage = loadPage('../pages/wordbook-detail/wordbook-detail')
+
+  await checkAsync('词库详情加载词条', async () => {
+    detailPage.onLoad({ id: '9' })
+    detailPage.onShow()
+    await flush()
+    assert.strictEqual(detailPage.data.state, 'ready')
+    assert.strictEqual(detailPage.data.total, 2)
+    assert.strictEqual(detailPage.data.words.length, 2)
+    assert.strictEqual(detailPage.data.book.name, '我的词表')
+    assert.strictEqual(detailPage.data.isCurrent, false)
+  })
+
+  const wordEditPage = loadPage('../pages/word-edit/word-edit')
+
+  await checkAsync('新增词条提交到对应词库', async () => {
+    calls.requests.length = 0
+    wordEditPage.onLoad({ bookId: '9' })
+    wordEditPage.setData({
+      form: { spelling: 'gamma', phonetic: '', meaning: '伽马', exampleSentence: '', exampleTranslation: '' }
+    })
+    await wordEditPage.onSubmit()
+    await flush()
+    const posts = calls.requests.filter(
+      (item) => item.path === '/api/wordbooks/9/words' && item.method === 'POST')
+    assert.strictEqual(posts.length, 1)
+    assert.strictEqual(posts[0].body.spelling, 'gamma')
+  })
+
+  const wordEditEdit = loadPage('../pages/word-edit/word-edit')
+
+  await checkAsync('编辑词条会回填表单', async () => {
+    wordEditEdit.onLoad({ bookId: '9', wordId: '101' })
+    await flush()
+    assert.strictEqual(wordEditEdit.data.isNew, false)
+    assert.strictEqual(wordEditEdit.data.form.spelling, 'alpha')
   })
 
   console.log('')

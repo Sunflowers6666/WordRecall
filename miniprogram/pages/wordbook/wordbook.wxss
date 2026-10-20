@@ -8,9 +8,43 @@
   font-weight: 600;
 }
 
-.wb-check {
+.current-tag {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: var(--c-brand-strong);
+}
+
+.check {
   margin-left: 16rpx;
   color: var(--c-brand);
   font-size: 36rpx;
   font-weight: 700;
+}
+
+.section-title {
+  font-size: 26rpx;
+  color: var(--c-text-3);
+  font-weight: 600;
+  margin: 8rpx 4rpx 12rpx;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.create-btn {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--c-brand-strong);
+  padding: 8rpx 4rpx 12rpx 24rpx;
+}
+
+.empty-mine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 32rpx;
+  gap: 6rpx;
 }

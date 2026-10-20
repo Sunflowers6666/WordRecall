@@ -8,9 +8,11 @@ CREATE TABLE IF NOT EXISTS wordbook (
     name        VARCHAR(100)    NOT NULL,
     description VARCHAR(500)    NULL,
     source      VARCHAR(16)     NOT NULL DEFAULT 'BUILTIN',
+    owner_id    BIGINT UNSIGNED NULL,
     created_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    UNIQUE KEY uk_wordbook_name (name)
+    UNIQUE KEY uk_wordbook_name (name),
+    KEY idx_wordbook_owner (owner_id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
