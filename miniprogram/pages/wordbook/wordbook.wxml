@@ -1,0 +1,17 @@
+<view class="page">
+  <view class="page-body">
+    <state-view wx:if="{{state === 'loading'}}" state="loading"></state-view>
+
+    <state-view wx:elif="{{state === 'error'}}" state="error" kind="{{errorKind}}" bind:action="onRetry"></state-view>
+
+    <view wx:else class="card list">
+      <view class="list-row" wx:for="{{list}}" wx:key="id" bindtap="onPick" data-index="{{index}}">
+        <view class="list-row-main">
+          <view class="wb-name">{{item.name}}</view>
+          <view class="t-caption">{{item.wordCount}} 词</view>
+        </view>
+        <view wx:if="{{item.selected}}" class="wb-check">✓</view>
+      </view>
+    </view>
+  </view>
+</view>

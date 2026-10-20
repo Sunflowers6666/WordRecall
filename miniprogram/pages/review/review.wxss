@@ -1,0 +1,29 @@
+.review-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.review-date {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.review-progress {
+  margin-left: 16rpx;
+}
+
+.progress-track {
+  height: 4rpx;
+  background: var(--c-bg-subtle);
+  border-radius: 2rpx;
+  margin-bottom: 24rpx;
+}
+
+.progress-bar {
+  height: 4rpx;
+  background: var(--c-brand);
+  border-radius: 2rpx;
+  transition: width 150ms ease-out;
+}

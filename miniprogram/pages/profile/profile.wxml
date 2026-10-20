@@ -1,0 +1,30 @@
+<view class="page">
+  <view class="page-body">
+    <view class="card profile-head">
+      <view class="avatar">{{initial}}</view>
+      <view class="profile-name">{{user.nickname || (user ? '微信用户' : '未登录')}}</view>
+      <view class="t-caption profile-hint">{{user ? '记录只属于你自己' : '登录后才能开始学习和记录'}}</view>
+      <view wx:if="{{!user}}" class="btn btn-primary login-btn" bindtap="onLogin">登录</view>
+    </view>
+
+    <view class="card list profile-list">
+      <view class="list-row" bindtap="onEditNickname">
+        <view class="list-row-main">昵称</view>
+        <view class="list-row-value">{{user.nickname || '未设置'}}</view>
+        <view class="list-row-arrow">›</view>
+      </view>
+
+      <view class="list-row" bindtap="onWordbook">
+        <view class="list-row-main">当前词库</view>
+        <view class="list-row-value">{{wordbookName || '未选择'}}</view>
+        <view class="list-row-arrow">›</view>
+      </view>
+
+      <view class="list-row" bindtap="onAbout">
+        <view class="list-row-main">关于</view>
+        <view class="list-row-value">v{{version}}</view>
+        <view class="list-row-arrow">›</view>
+      </view>
+    </view>
+  </view>
+</view>

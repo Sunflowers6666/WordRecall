@@ -1,0 +1,162 @@
+.month-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  margin: 8rpx 0 16rpx;
+}
+
+.month-nav {
+  display: flex;
+  align-items: center;
+}
+
+.month-title {
+  font-size: 48rpx;
+  font-weight: 700;
+  margin: 0 8rpx;
+}
+
+.arrow {
+  width: 88rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  color: var(--c-text-2);
+}
+
+.today-btn {
+  position: absolute;
+  right: 0;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  padding-left: 24rpx;
+  color: var(--c-brand);
+  font-size: 28rpx;
+}
+
+.calendar {
+  padding: 24rpx 16rpx;
+}
+
+.week-row {
+  display: flex;
+}
+
+.week-cell {
+  width: 14.2857%;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--c-text-3);
+  height: 56rpx;
+  line-height: 56rpx;
+}
+
+.days-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.day-cell {
+  position: relative;
+  width: 14.2857%;
+  height: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-num {
+  width: 72rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 36rpx;
+  font-weight: 600;
+}
+
+.day-selected .day-num {
+  background: var(--c-brand);
+  color: #FFFFFF;
+}
+
+.day-today .day-num {
+  border: 2rpx solid var(--c-brand);
+  box-sizing: border-box;
+}
+
+.day-future .day-num {
+  color: var(--c-text-disabled);
+}
+
+.day-dot {
+  position: absolute;
+  bottom: 6rpx;
+  left: 50%;
+  margin-left: -4rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: var(--c-brand);
+}
+
+.day-dot-on {
+  background: #FFFFFF;
+}
+
+.summary {
+  margin-top: 24rpx;
+}
+
+.summary-date {
+  font-size: 40rpx;
+  font-weight: 600;
+}
+
+.summary-meta {
+  margin-top: 8rpx;
+  font-size: 28rpx;
+  color: var(--c-text-3);
+}
+
+.summary-btn {
+  margin-top: 24rpx;
+  height: 88rpx;
+}
+
+.summary-empty {
+  text-align: center;
+  padding: 40rpx 32rpx;
+}
+
+.summary-empty .summary-date {
+  font-size: 32rpx;
+  color: var(--c-text-2);
+}
+
+.wb-chip {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  padding: 0 24rpx;
+  background: var(--c-brand-tint);
+  color: var(--c-brand);
+  border-radius: var(--r-chip);
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.caret {
+  margin-left: 8rpx;
+  font-size: 24rpx;
+  opacity: 0.7;
+}
+
+.start-btn {
+  width: 320rpx;
+}

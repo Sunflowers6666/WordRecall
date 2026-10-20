@@ -1,0 +1,65 @@
+.state-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 96rpx var(--s-4, 32rpx);
+  box-sizing: border-box;
+}
+
+.state-icon {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: var(--c-bg-subtle, #EFF2EF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.state-title {
+  margin-top: var(--s-4, 32rpx);
+  font-size: 32rpx;
+  color: var(--c-text-2, #5B6472);
+  text-align: center;
+}
+
+.state-desc {
+  margin-top: var(--s-1, 8rpx);
+  font-size: 24rpx;
+  color: var(--c-text-3, #6E7783);
+  text-align: center;
+}
+
+.state-action {
+  margin-top: var(--s-6, 48rpx);
+  min-width: 240rpx;
+  padding: 0 var(--s-6, 48rpx);
+  height: 88rpx;
+}
+
+/* 骨架屏：静态，无动画（UI 规范 §4.4） */
+.skeleton {
+  width: 100%;
+}
+
+.sk-line {
+  background: var(--c-bg-subtle, #EFF2EF);
+  border-radius: var(--r-chip, 8rpx);
+  margin-bottom: var(--s-2, 16rpx);
+}
+
+.sk-line-1 {
+  height: 28rpx;
+  width: 100%;
+}
+
+.sk-line-2 {
+  height: 40rpx;
+  width: 76%;
+}
+
+.sk-line-3 {
+  height: 28rpx;
+  width: 52%;
+  margin-bottom: 0;
+}

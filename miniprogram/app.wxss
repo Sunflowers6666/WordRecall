@@ -1,0 +1,180 @@
+/* 设计令牌：见 docs/stage-2-ui-spec.md §3。页面与组件只引用变量，不写死样式值。 */
+page {
+  --c-bg-page: #F6F7F5;
+  --c-bg-card: #FFFFFF;
+  --c-bg-subtle: #EFF2EF;
+  --c-brand: #2C6E5B;
+  --c-brand-strong: #245A4B;
+  --c-brand-tint: #E8F1EE;
+  --c-text: #1E232B;
+  --c-text-2: #5B6472;
+  --c-text-3: #6E7783;
+  --c-text-disabled: #A6AEB8;
+  --c-line: #E6E9E6;
+  --c-accent: #D98324;
+  --c-danger: #C8483F;
+
+  --s-1: 8rpx;
+  --s-2: 16rpx;
+  --s-3: 24rpx;
+  --s-4: 32rpx;
+  --s-5: 40rpx;
+  --s-6: 48rpx;
+  --s-8: 64rpx;
+
+  --r-card: 24rpx;
+  --r-btn: 16rpx;
+  --r-chip: 8rpx;
+  --sh-card: 0 4rpx 16rpx rgba(30, 35, 43, 0.06);
+  --sh-float: 0 8rpx 32rpx rgba(30, 35, 43, 0.10);
+
+  background-color: var(--c-bg-page);
+  color: var(--c-text);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  font-size: 32rpx;
+  line-height: 1.6;
+}
+
+.page {
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.page-body {
+  padding: var(--s-3) var(--s-4);
+}
+
+.page-body-with-bar {
+  padding: var(--s-3) var(--s-4) 220rpx;
+}
+
+.card {
+  background: var(--c-bg-card);
+  border-radius: var(--r-card);
+  box-shadow: var(--sh-card);
+  padding: var(--s-4);
+  box-sizing: border-box;
+}
+
+.divider {
+  height: 1rpx;
+  background: var(--c-line);
+  margin: var(--s-3) 0;
+}
+
+/* 文本 */
+.t-secondary { color: var(--c-text-2); }
+.t-tertiary { color: var(--c-text-3); }
+.t-sub { font-size: 28rpx; color: var(--c-text-3); }
+.t-caption { font-size: 24rpx; color: var(--c-text-3); }
+.t-num { font-variant-numeric: tabular-nums; }
+.t-danger { color: var(--c-danger); }
+
+/* 按钮：用 view 实现，避免原生 button 默认边框 */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  border-radius: var(--r-btn);
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.btn-primary {
+  background: var(--c-brand);
+  color: #FFFFFF;
+}
+
+.btn-primary-active {
+  background: var(--c-brand-strong);
+}
+
+.btn-secondary {
+  background: #FFFFFF;
+  color: var(--c-brand);
+  border: 1rpx solid var(--c-line);
+}
+
+.btn-secondary-active {
+  background: var(--c-bg-subtle);
+}
+
+.btn-disabled {
+  background: var(--c-line);
+  color: var(--c-text-disabled);
+  border-color: var(--c-line);
+  box-shadow: none;
+}
+
+.btn-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88rpx;
+  color: var(--c-brand);
+  font-size: 28rpx;
+}
+
+.bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx var(--s-4) calc(12rpx + env(safe-area-inset-bottom));
+  background: var(--c-bg-card);
+  border-top: 1rpx solid var(--c-line);
+  box-sizing: border-box;
+}
+
+.action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: var(--s-3);
+  padding: 16rpx var(--s-4) calc(16rpx + env(safe-area-inset-bottom));
+  background: var(--c-bg-card);
+  border-top: 1rpx solid var(--c-line);
+  box-sizing: border-box;
+}
+
+.action-bar .btn {
+  flex: 1;
+}
+
+/* 列表行 */
+.list-row {
+  display: flex;
+  align-items: center;
+  min-height: 104rpx;
+  padding: 0 var(--s-4);
+  border-bottom: 1rpx solid var(--c-line);
+  box-sizing: border-box;
+}
+
+.list-row:last-child {
+  border-bottom: none;
+}
+
+.list-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-row-value {
+  font-size: 28rpx;
+  color: var(--c-text-3);
+  margin-left: var(--s-3);
+}
+
+.list-row-arrow {
+  margin-left: var(--s-2);
+  color: var(--c-text-disabled);
+  font-size: 32rpx;
+}

@@ -1,0 +1,22 @@
+<view wx:if="{{loaded}}" class="page">
+  <view class="page-body result-body">
+    <view class="result-hero">
+      <view class="result-number t-num {{allRight ? 'is-ok' : 'is-warn'}}">{{allRight ? total : wrong}}</view>
+      <view class="result-label">{{allRight ? '个单词全部记住' : '个单词没记住'}}</view>
+      <view class="result-sub t-caption">{{dateLabel}} · 共 {{total}} 词</view>
+    </view>
+
+    <view wx:if="{{wrongWords.length > 0}}" class="card wrong-list">
+      <view class="wrong-title t-sub">错词</view>
+      <view class="wrong-row" wx:for="{{wrongWords}}" wx:key="id">
+        <view class="wrong-word">{{item.spelling}}</view>
+        <view class="wrong-meaning">{{item.meaning}}</view>
+      </view>
+    </view>
+
+    <view class="result-actions">
+      <view wx:if="{{wrong > 0}}" class="btn btn-primary" bindtap="onAgain">再复习错词</view>
+      <view class="btn-text" bindtap="onBack">返回日历</view>
+    </view>
+  </view>
+</view>

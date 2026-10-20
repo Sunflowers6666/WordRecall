@@ -1,0 +1,33 @@
+<view class="page">
+  <view class="page-body page-body-with-bar">
+    <view class="review-head">
+      <view class="review-date">{{dateLabel}} · {{batchSize}} 词</view>
+      <view class="review-progress t-sub t-num">
+        {{index + 1}} / {{batchSize}}<text wx:if="{{wrongIds.length > 0}}"> · 错 {{wrongIds.length}}</text>
+      </view>
+    </view>
+
+    <state-view wx:if="{{state === 'loading' || state === 'submitting'}}" state="loading"></state-view>
+
+    <state-view wx:elif="{{state === 'error'}}" state="error" kind="{{errorKind}}" bind:action="onRetry"></state-view>
+
+    <state-view
+      wx:elif="{{state === 'empty'}}"
+      state="empty"
+      title="{{wrongOnly ? '没有需要复习的错词' : '这天没有学习记录'}}"
+      desc="{{wrongOnly ? '这一轮全对，保持下去' : '换一个带绿点的日期试试'}}"
+    ></state-view>
+
+    <block wx:else>
+      <view class="progress-track">
+        <view class="progress-bar" style="width: {{progressPercent}}%"></view>
+      </view>
+      <word-card word="{{current}}" revealed="{{true}}"></word-card>
+    </block>
+  </view>
+
+  <view wx:if="{{state === 'ready'}}" class="action-bar">
+    <view class="btn btn-secondary" bindtap="onForgot">没记住</view>
+    <view class="btn btn-primary" bindtap="onRemember">记住了</view>
+  </view>
+</view>
