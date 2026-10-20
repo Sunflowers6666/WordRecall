@@ -4,7 +4,7 @@
 
 - 小程序名称：**单词日历**
 - 代码仓库：**WordRecall**
-- 当前阶段：阶段 1（后端骨架、数据库、词库导入、微信登录）；小程序页面从阶段 2 开始。
+- 当前阶段：阶段 2（小程序 UI 规范与后端接口已完成，6 个页面进行中）
 
 ## 核心功能
 
@@ -89,7 +89,21 @@ cd backend
 mvnw.cmd test
 ```
 
-阶段 1 覆盖 JWT、微信登录服务（mock WxJava）、词库导入服务；CSV RFC 4180 七类边界测试在阶段 5。
+阶段 1 覆盖 JWT、微信登录服务（mock WxJava）、词库导入服务；阶段 2 覆盖日历聚合、新学批次、按日期复习与错词提交、词库切换、用户昵称；CSV RFC 4180 七类边界测试在阶段 5。
+
+### 阶段 2 接口（已实现）
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| GET | `/api/wordbooks` | 词库列表（可匿名，带 token 时返回 `selected`） |
+| PATCH | `/api/users/me` | 修改昵称 |
+| PUT | `/api/users/me/wordbook` | 切换当前词库 |
+| GET | `/api/calendar?year=&month=` | 月份日历：每天学了多少词、错了几个 |
+| POST | `/api/study/sessions` | 取一批未学单词并记入当天记录 |
+| GET | `/api/review?date=` | 某天首次学过的单词 |
+| POST | `/api/review/submit` | 提交某天错词，回写 `is_wrong` |
+
+详细契约（请求/响应/错误码）见 `docs/stage-2-ui-spec.md` §7。
 
 ## 小程序端配置（阶段 2 起）
 
@@ -176,6 +190,7 @@ module.exports = {
 | 版本 | 日期 | 内容 |
 |---|---|---|
 | 阶段 1 | 2026-10 | 后端骨架、四张表、ECDICT 词库导入、WxJava + JWT 登录、单元测试 |
+| 阶段 2（进行中） | 2026-10 | 小程序 UI 规范（`docs/stage-2-ui-spec.md`）、7 个业务接口、27 个单元测试、真实 MySQL 冒烟 |
 
 ## 上线前检查项（阶段 6 使用）
 

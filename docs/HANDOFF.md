@@ -1,6 +1,6 @@
 # WordRecall 交接文档
 
-> 更新时间：2026-10-20 17:05（Asia/Shanghai）
+> 更新时间：2026-10-20 17:12（Asia/Shanghai）
 > 新窗口请先读本文件，再读 `README.md` 和 `git log`。本文件不包含任何密码、PAT、AppSecret、JWT 密钥。
 
 ## 1. 项目基本信息
@@ -12,7 +12,7 @@
 | 本地路径 | `E:\Develop\Projects\WordRecall` |
 | GitHub 账号 | `Sunflowers6666` |
 | GitHub 仓库 | `https://github.com/Sunflowers6666/WordRecall`（已创建，public） |
-| 当前阶段 | **阶段 1 已完成并合并到 develop**；阶段 2 UI 规范已出，待确认后写页面 |
+| 当前阶段 | **阶段 2 进行中**：UI 规范已确认，7 个接口完成并通过冒烟；6 个页面待写 |
 
 产品核心：按学习批次回看。用户选择任意历史日期，只复习自己在该日期首次学习的单词；1.0 只开放预置词库。
 
@@ -36,6 +36,16 @@
 - `main` 已同步阶段 1 代码（默认分支不再只有阶段 0）
 - Secret scanning 与 Push protection 均为 enabled
 
+### 阶段 2（进行中，分支 `feature/stage-2-miniprogram`，PR #4）
+
+- `docs/stage-2-ui-spec.md`：设计令牌（深青绿 `#2C6E5B` 主色、衬线单词字体、rpx 字号/间距/圆角）、三态规范、6 个页面布局、工程结构、接口契约、验收标准；§11 已记录确认结果
+- 后端 7 个接口：`GET /api/wordbooks`、`PATCH /api/users/me`、`PUT /api/users/me/wordbook`、`GET /api/calendar`、`POST /api/study/sessions`、`GET /api/review`、`POST /api/review/submit`
+- 新增 `LearningRecordService`、`StudyService`、`ReviewService`、`CalendarService` 及对应 DTO/Controller
+- 单元测试 **27 个全部通过**（新增 20 个：日历 3、学习记录 6、新学 3、复习 4、用户 4）
+- 真实 MySQL 冒烟 **34 项全部通过**（起真实 jar + JWT，覆盖匿名/登录、两批新学不重复、错词提交与回读、词库切换、401/400/404 边界）
+- 修复：`?date=not-a-date` 这类参数格式错误原先返回 500，`GlobalExceptionHandler` 现在返回 400；同时补 405/415 处理
+- 冒烟用测试用户与学习记录已清理（`users=0`、`learning_record=0`）
+
 ### 实测数据
 
 ```text
@@ -44,27 +54,30 @@ CET-4 = 3849
 CET-6 = 5407
 IELTS = 5040
 users = 0
+learning_record = 0（冒烟测试数据已清理）
+backend_tests = 27 passed
 ```
 
 ### 未完成 / 待用户操作
 
-- 真实微信 `code2Session` 未执行（AppID/AppSecret 仍是 `CHANGE_ME`）
+- 真实微信 `code2Session` 未执行（AppID/AppSecret 仍是 `CHANGE_ME`，需要你提供 AppID）
 - 云服务器未采购
-- 阶段 2 页面未开始（UI 规范已出：`docs/stage-2-ui-spec.md`，待用户确认；Issue #3）
+- 阶段 2 的 6 个小程序页面未写（规范已确定，见 `docs/stage-2-ui-spec.md`；Issue #3）
 - Dependabot 未启用（可选，需用户确认）
 
 ## 3. Git 状态
 
 ```text
-main:                       阶段 1 完成，与 develop 同步（v1.0.0 时打 tag）
-develop:                    9dadeb2 Merge pull request #2 + docs: 更新阶段 1 完成状态
-feature/stage-1-backend:    3c629c3 docs: 添加跨会话交接文档（已合并）
-工作区:                     clean
-远程:                       origin https://github.com/Sunflowers6666/WordRecall.git
-已推送:                     是（main / develop / feature）
-Issue:                      #1 CLOSED
-PR:                         #2 MERGED
-CI:                         run 39394653123 SUCCESS（backend-test）
+main:                        阶段 1 完成，与 develop 同步（v1.0.0 时打 tag）
+develop:                     97a624c docs: 记录 main 同步阶段 1
+feature/stage-2-miniprogram: 阶段 2 UI 规范 + 7 个接口（当前分支，PR #4 draft）
+feature/stage-1-backend:     已合并，保留
+工作区:                      clean
+远程:                        origin https://github.com/Sunflowers6666/WordRecall.git
+已推送:                      是（main / develop / feature/stage-2-miniprogram）
+Issue:                       #1 CLOSED；#3 OPEN（阶段 2）
+PR:                          #2 MERGED；#4 OPEN（阶段 2，draft）
+CI:                          PR #4 首个提交 run 39396241530 SUCCESS（backend-test）
 ```
 
 分支策略：`main` 稳定、`develop` 集成、`feature/*` 功能分支；阶段 1 已 PR 到 `develop`。`main` 按计划在阶段 6 统一更新。
@@ -138,12 +151,11 @@ Dependabot:      disabled（可选，启用前需用户确认）
 
 ## 8. 下一步（阶段 2）
 
-1. 用户确认 `docs/stage-2-ui-spec.md` §11 的 6 个待确认项（主色、衬线字体、tabBar、导航栏、遮罩释义、每批 20 词）。
-2. 用户提供 AppID（可发聊天）；AppSecret 只在本地 `backend/application-secret.yml` 填写，不发聊天。
-3. 确认后按规范落地：先补 `docs/stage-2-ui-spec.md` §7 的后端接口（含单元测试），再写 6 个页面。
-4. 用微信开发者工具取一个临时 code，验证真实 `code2Session` 与登录接口。
-5. 云服务器采购清单已在对话中给出；采购、备案、微信后台操作由用户完成。
-6. 阶段 2 不做用户自建词库/文件导入（阶段 4/5，入口默认关闭）。
+1. 写 6 个小程序页面（按已确认的 `docs/stage-2-ui-spec.md`）：工程骨架 → `utils/request.js` + 登录 → 日历首页 → 新学 → 复习 → 结果 → 我的 → 词库列表；在微信开发者工具里用 mock 登录跑通。
+2. 用户提供 AppID（可发聊天）后写入 `miniprogram/project.config.json`；AppSecret 只在本地 `backend/application-secret.yml` 填写，不发聊天。
+3. 用微信开发者工具取一个临时 code，验证真实 `code2Session` 与登录接口。
+4. 云服务器采购清单已在对话中给出；采购、备案、微信后台操作由用户完成。
+5. 阶段 2 不做用户自建词库/文件导入（阶段 4/5，入口默认关闭）。
 
 ## 9. 新窗口启动提示（直接复制）
 

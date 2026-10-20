@@ -275,28 +275,29 @@ miniprogram/
 - 不引入 UI 库；组件只做 `word-card` 与 `state-view`。
 - 基础库最低版本 `2.20.0`。
 
-## 7. 接口契约（阶段 2 待补后端）
+## 7. 接口契约（阶段 2，已实现并冒烟通过）
 
 统一 `{code, message, data}`，`code=0` 成功；鉴权 `Authorization: Bearer <token>`。
-已实现：`POST /api/auth/login {code}` → `{token, user}`。
+已实现：`POST /api/auth/login {code}` → `{token, user}`，以及下表 7 个接口。
 
-| 方法 | 路径 | 请求 | 响应 `data` |
-|---|---|---|---|
-| GET | `/api/wordbooks` | — | `[{id, name, description, wordCount, selected}]` |
-| PUT | `/api/users/me/wordbook` | `{wordbookId}` | `{user}` |
-| PATCH | `/api/users/me` | `{nickname}` | `{user}` |
-| GET | `/api/calendar?year=2026&month=10` | — | `{days:[{date:"2026-10-16",wordCount:20,wrongCount:3}], month:{days:5,words:100,wrong:12}}` |
-| POST | `/api/study/sessions` | `{size:20}` | `{words:[{id,spelling,phonetic,meaning,exampleSentence,exampleTranslation}], todayWordCount}` |
-| GET | `/api/review?date=2026-10-16` | — | `{date, words:[{...同上, isWrong:false}]}` |
-| POST | `/api/review/submit` | `{date, wrongWordIds:[1,2]}` | `{date, total:20, wrong:3}` |
+| 方法 | 路径 | 鉴权 | 请求 | 响应 `data` |
+|---|---|---|---|---|
+| GET | `/api/wordbooks` | 可选 | — | `[{id,name,description,wordCount,selected}]` |
+| PUT | `/api/users/me/wordbook` | 需要 | `{wordbookId}` | `{user}` |
+| PATCH | `/api/users/me` | 需要 | `{nickname}` | `{user}` |
+| GET | `/api/calendar?year=2026&month=10` | 需要 | — | `{month:"2026-10", days:[{date,wordCount,wrongCount}], summary:{days,words,wrong}}` |
+| POST | `/api/study/sessions` | 需要 | `{size:20}` | `{words:[{id,spelling,phonetic,meaning,exampleSentence,exampleTranslation,isWrong}], todayWordCount, remaining}` |
+| GET | `/api/review?date=2026-10-16` | 需要 | — | `{date, words:[...同上]}` |
+| POST | `/api/review/submit` | 需要 | `{date, wrongWordIds:[1,2]}` | `{date, total:20, wrong:3}` |
 
 规则：
 
-- `POST /api/study/sessions` 写入当天 `learning_record`；同一单词同一天只记一次（`uk_user_word_date` 保证）。
-- 从当前词库按 `sort_order` 取未学单词；不足 `size` 时返回剩余数量，卡片区显示「本批实际 N 词」。
-- `POST /api/review/submit`：`wrongWordIds` 置 `is_wrong=1`，当天其余记录置 `0`（以最后一次提交为准）。
-- 日历的 `wrongCount` = 当天 `is_wrong=1` 的记录数。
-- 所有接口 400/401 走统一异常处理，`message` 为可直接展示的中文。
+- 未登录访问 `/api/wordbooks` 时 `selected` 全为 `false`（首页可匿名浏览词库）。
+- `POST /api/study/sessions`：从当前词库按 `sort_order` 取未学过的词，写入当天 `learning_record`；同一单词同一天只记一次（`uk_user_word_date`）。`size` 范围 1–50。`remaining` 是本批之后该词库剩余未学词数；`words` 为空表示词库已学完（客户端提示「去练练错词」）。
+- `GET /api/review`：当天无记录返回 200 + `words: []`，客户端显示空状态，不当作错误。
+- `POST /api/review/submit`：`wrongWordIds` 置 `is_wrong=1`，当天其余记录置 `0`（以最后一次提交为准）。当天无记录返回 404；单词不属于该日期返回 400。
+- 日历 `wrongCount` = 当天 `is_wrong=1` 的记录数；`summary.days` = 有记录的天数。
+- 400/401/404/409 统一异常处理，`message` 为可直接展示的中文；参数格式错误（如 `date=not-a-date`、`month=13`）返回 400 而不是 500。
 
 ## 8. 交互细节与边界
 
@@ -325,13 +326,19 @@ miniprogram/
 
 深色模式、自定义 tabBar 图标、头像上传、分享卡片、离线缓存、骨架动画、手势切换卡片、自建词库、文件导入、学习提醒（订阅消息）。
 
-## 11. 待确认事项
+## 11. 确认结果
 
-1. 主色用深青绿 `#2C6E5B`（安静、护眼、适合长时间阅读）是否接受？备选：墨蓝 `#2B4C7E`、深棕红 `#8A4B3C`。
-2. 单词拼写用衬线字体（词典感）是否接受？不喜欢就统一用系统无衬线。
-3. tabBar 只放文字（日历 / 我的）是否接受？要图标需要你提供 2 组 81×81 PNG。
-4. 所有页面用系统默认导航栏（不自定义），是否接受？
-5. 新学卡片默认「遮罩释义、点击查看」是否保留？若嫌麻烦可改成直接显示。
-6. 每批新学默认 20 词，阶段 2 固定不开放设置，是否同意？
+已确认（2026-10-20）：
 
-确认后我会：建 `feature/stage-2-miniprogram` 分支 → 先补 §7 后端接口（含测试）→ 再写 6 个页面 → 真机联调。
+1. 主色 **深青绿 `#2C6E5B`**。
+2. 单词拼写用**衬线体**（Georgia / Songti SC，安卓回退无衬线）。
+3. tabBar **纯文字两个 tab**（日历 / 我的），不需要图标资源。
+4. 本轮先补**后端接口 + 单元测试**，页面下一轮写。
+
+沿用默认值（未反对即按此实现）：
+
+5. 所有页面用系统默认导航栏（不自定义），标题写在 `app.json`。
+6. 新学卡片默认「遮罩释义、点击查看」，做成页面内开关，复习页不遮罩。
+7. 每批新学默认 20 词，阶段 2 固定，不开放设置。
+
+待用户提供：小程序 **AppID**（可发聊天）；AppSecret 只填本地 `backend/application-secret.yml`。
