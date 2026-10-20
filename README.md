@@ -65,6 +65,8 @@ mysql --defaults-extra-file="E:\Develop\MySQL\.secrets\client-root.cnf" -D worda
 
 复制 `backend\src\main\resources\application-secret.example.yml` 为 `backend\application-secret.yml`，填入本机数据库密码、JWT 密钥、AppID/AppSecret。
 
+> 仓库里**只有示例文件** `application-secret.example.yml`（值全是 `CHANGE_ME`）；真实的 `application-secret.yml` 从未提交，已被 `.gitignore` 排除。
+
 填 AppSecret 建议用脚本（隐藏输入、校验格式、自动清掉误粘的多行内容）：
 
 ```bat
