@@ -8,7 +8,8 @@
     "pages/wordbook/wordbook",
     "pages/wordbook-detail/wordbook-detail",
     "pages/word-edit/word-edit",
-    "pages/import/import"
+    "pages/import/import",
+    "pages/wrongbook/wrongbook"
   ],
   "window": {
     "backgroundTextStyle": "dark",

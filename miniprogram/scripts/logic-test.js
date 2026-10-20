@@ -61,6 +61,14 @@ const routes = {
   '/api/users/me': () => ({ id: 1, nickname: '小明', avatarUrl: null, currentWordbookId: 1, batchSize: 30 }),
   '/api/users/me/wordbook': () => ({ id: 1, nickname: '小明', avatarUrl: null, currentWordbookId: 2, batchSize: 30 }),
   '/api/users/me/stats': () => ({ learnedDays: 4, learnedWords: 41, wrongWords: 2, streakDays: 3, todayWords: 5 }),
+  '/api/wrongbook': () => ({
+    total: 2,
+    words: [
+      { id: 1, spelling: 'abandon', meaning: '放弃', isWrong: true },
+      { id: 2, spelling: 'benefit', meaning: '好处', isWrong: true }
+    ]
+  }),
+  '/api/wrongbook/submit': () => 1,
   '/api/auth/login': () => ({ token: 'fake-token', user: { id: 1, nickname: '小明', avatarUrl: null, currentWordbookId: 1 } })
 }
 
@@ -411,6 +419,34 @@ const dateUtil = require('../utils/date')
     assert.strictEqual(importPage.data.result.imported, 2)
     assert.strictEqual(calls.uploads.length, 2)
     assert.ok(calls.uploads[1].url.indexOf('newBookName=demo') > 0, calls.uploads[1].url)
+  })
+
+  const wrongbookPage = loadPage('../pages/wrongbook/wrongbook')
+
+  await checkAsync('错词本：复习后提交记住的词', async () => {
+    storage.wr_token = 'fake-token'
+    calls.requests.length = 0
+    wrongbookPage.onShow()
+    await flush()
+    assert.strictEqual(wrongbookPage.data.state, 'ready')
+    assert.strictEqual(wrongbookPage.data.total, 2)
+
+    wrongbookPage.onStart()
+    assert.strictEqual(wrongbookPage.data.mode, 'review')
+    assert.strictEqual(wrongbookPage.data.current.id, 1)
+
+    wrongbookPage.onRemember()
+    await flush()
+    assert.strictEqual(wrongbookPage.data.index, 1)
+    assert.deepStrictEqual(wrongbookPage.data.remembered, [1])
+
+    wrongbookPage.onForgot()
+    await flush()
+    const submits = calls.requests.filter(
+      (item) => item.path === '/api/wrongbook/submit' && item.method === 'POST')
+    assert.strictEqual(submits.length, 1)
+    assert.deepStrictEqual(submits[0].body.rememberedWordIds, [1])
+    assert.strictEqual(wrongbookPage.data.mode, 'list')
   })
 
   console.log('')

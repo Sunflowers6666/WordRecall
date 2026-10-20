@@ -39,6 +39,12 @@
         <view class="list-row-arrow">›</view>
       </view>
 
+      <view class="list-row" bindtap="onWrongbook">
+        <view class="list-row-main">错词本</view>
+        <view class="list-row-value">{{wrongCount > 0 ? wrongCount + ' 个' : '空'}}</view>
+        <view class="list-row-arrow">›</view>
+      </view>
+
       <view class="list-row" bindtap="onWordbook">
         <view class="list-row-main">当前词库</view>
         <view class="list-row-value">{{wordbookName || '未选择'}}</view>

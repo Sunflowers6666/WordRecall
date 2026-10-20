@@ -11,13 +11,28 @@ Page({
     wordbookName: '',
     version: '1.0.0',
     stats: null,
-    batchSize: 20
+    batchSize: 20,
+    wrongCount: 0
   },
 
   onShow() {
     this.syncUser()
     this.loadWordbook()
     this.loadStats()
+    this.loadWrongCount()
+  },
+
+  async loadWrongCount() {
+    if (!getUser()) {
+      this.setData({ wrongCount: 0 })
+      return
+    }
+    try {
+      const data = await request({ url: '/api/wrongbook?limit=1' })
+      this.setData({ wrongCount: data.total || 0 })
+    } catch (error) {
+      this.setData({ wrongCount: 0 })
+    }
   },
 
   syncUser() {
@@ -127,6 +142,10 @@ Page({
         }
       }
     })
+  },
+
+  onWrongbook() {
+    wx.navigateTo({ url: '/pages/wrongbook/wrongbook' })
   },
 
   onWordbook() {
