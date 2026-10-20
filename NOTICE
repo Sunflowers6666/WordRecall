@@ -1,0 +1,17 @@
+WordRecall (单词日历)
+Copyright (c) 2026 Sunflowers6666
+
+Repository: https://github.com/Sunflowers6666/WordRecall
+License: MIT (see LICENSE)
+
+Third-party data
+---------------
+ECDICT
+- https://github.com/skywind3000/ECDICT
+- MIT License, Copyright (c) 2025 Linwei
+- Used to generate the CET-4 / CET-6 / IELTS wordbook JSON files.
+
+If you reuse or redistribute this project, please retain this NOTICE file and
+the original attribution. This is a community request; the MIT license itself
+requires retaining the copyright and license notice, not a prominent author
+credit.

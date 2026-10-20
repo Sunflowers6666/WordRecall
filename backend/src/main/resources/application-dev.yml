@@ -1,0 +1,31 @@
+spring:
+  config:
+    import: optional:file:./application-secret.yml
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/wordapp?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: wordapp
+    password: ${DB_PASSWORD}
+  sql:
+    init:
+      mode: never
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+
+wx:
+  miniapp:
+    appid: ${WX_MINIAPP_APPID}
+    secret: ${WX_MINIAPP_SECRET}
+    config-storage:
+      type: memory
+
+mybatis-plus:
+  configuration:
+    # Keep startup clean during the one-time 14k-word import.
+    # For SQL debugging, temporarily switch to org.apache.ibatis.logging.stdout.StdOutImpl.
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+logging:
+  level:
+    com.wordrecall: info
