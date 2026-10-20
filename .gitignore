@@ -1,0 +1,55 @@
+# ---- Secrets / credentials (never commit) ----
+application-secret.yml
+application-secret.yaml
+**/application-secret.yml
+**/application-secret.yaml
+*.key
+*.pem
+*.p12
+*.jks
+*.keystore
+keystore.properties
+.env
+.env.*
+*.secret
+*credential*.txt
+private.*.key
+uploadKey*
+
+# ---- Local database exports ----
+*.dump
+*.sql.gz
+*.sql.bak
+
+# ---- Backend build ----
+backend/target/
+*.class
+*.war
+*.jar
+!/.mvn/wrapper/maven-wrapper.jar
+!backend/.mvn/wrapper/maven-wrapper.jar
+
+# ---- IDE ----
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Logs / temp ----
+*.log
+logs/
+tmp/
+
+# ---- Mini program ----
+miniprogram/node_modules/
+miniprogram/miniprogram_npm/
+**/project.private.config.json
+
+# ---- Local environment ----
+*.local
